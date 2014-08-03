@@ -6,12 +6,15 @@
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/ordered_index.hpp>
+#include <chrono>
 #include <vector>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <algorithm>
 #include <stdexcept>
 #include <exception>
+#include <map>
 using std::pair;
 using std::vector;
 using std::logic_error;
@@ -22,7 +25,10 @@ typedef boost::graph_traits<Graph>::vertices_size_type VertexIndex;
 typedef VertexIndex* Rank;
 typedef Vertex* Parent;
 typedef boost::disjoint_sets<Rank, Parent> DSet;
-
+//For millisecond level timing
+double nanosecond_res_diff(std::chrono::high_resolution_clock::time_point end, std::chrono::high_resolution_clock::time_point start) {
+    return( std::chrono::duration_cast<std::chrono::nanoseconds>(end-start).count() / 1000000000.0);
+}
 
 //Function to write jsonArray from any iterable to any stream (file or cout)
 template <typename T, typename Stream> void  jsonArray(T toPrint, Stream &stream, double Norm=1)
@@ -44,6 +50,28 @@ template <typename T, typename Stream> void  jsonArray(T toPrint, Stream &stream
     stream<<"]";
     stream.flush();
 }  
+
+//Function to write json dictionary from any map to any stream (file or cout)
+template <typename T, typename Stream> void  jsonMap(T toPrint, Stream &stream, double Norm=1)
+{
+    stream<<"{";
+    bool firstVal=true;
+    for( auto val: toPrint)
+    {
+        if (!firstVal)
+            stream<<",";
+        firstVal=false;
+        stream << "\"" << val.first << "\" : ";
+        if(Norm == 1)
+            stream << std::setprecision(10) << val.second;
+        else
+            stream <<std::setprecision(10) << val.second / Norm;
+
+    }
+    stream<<"}";
+    stream.flush();
+}  
+
 
 int randint(unsigned N){
  return rand()%N;   
@@ -107,10 +135,15 @@ private:
         std::vector<long unsigned> gcHistory;
         std::string outputFileName;
         int verbosity;
+        std::chrono::high_resolution_clock clock;
+        std::chrono::time_point <std::chrono::_V2::system_clock, std::chrono::_V2::system_clock::duration > instant;
+        bool profile;
+        std::map<std::string,double> profileMap;
 public:
         ColorNet(unsigned int N, unsigned int nColors);
         void setNodeColors();
         void setFileName(std::string fname);
+        void profileOn(bool state);
         void blackOutColor(int colorNumber);
         void buildAntiColorComponents();
         std::pair<int,int> getMaxPair( vector< int > components, int num);
@@ -118,7 +151,7 @@ public:
         void buildNetwork();
         long unsigned getMutualGC();
         void incrementalComponents(double fromK, double toK, int link_res);
-        void buildEdgeVector(double toK);
+        void buildEdgeVector(unsigned int to_links);
         void initializeDSets();
         void mergeComponents(int color, int u, int v);
         long unsigned getMutualGCFromDSets();
@@ -138,6 +171,15 @@ void ColorNet::buildNetwork()
 //For now, we don't do anything here.
 }
 
+void ColorNet::profileOn(bool state)
+{
+    profile = state;
+    if(profile){
+        profileMap["incrementalComponents"]=0;
+        profileMap["getMutualGCFromDSets"]=0;
+    }
+}
+
 
 void ColorNet::setNodeColors()
 {
@@ -147,10 +189,10 @@ void ColorNet::setNodeColors()
 
 
 
-void ColorNet::buildEdgeVector(double toK)
+void ColorNet::buildEdgeVector(unsigned to_links)
 {
 
-unsigned to_links = N*toK/2;
+//use a set to guaruntee unique links (all links are from lower to higher numbers for that reason also)
 boost::unordered_set<std::pair<int,int>> edge_list; 
 while( edge_list.size() < to_links){
     edge_list.insert(makeEdge("random",N)());   
@@ -209,9 +251,10 @@ void ColorNet::incrementalComponents(double fromK, double toK, int link_res)
 {
     
 long to_links = toK*N/2;
-long from_links = toK*N/2;
+long from_links = 0;
 long link_count = 0;
-buildEdgeVector(toK);
+long total_links = to_links - from_links;
+buildEdgeVector(to_links);
 
 try{
 initializeDSets();
@@ -220,8 +263,11 @@ initializeDSets();
     std::cerr<<e.what()<<std::endl;
 }
 int s,t,sColor,tColor;
-gcHistory.resize(to_links);
+gcHistory.resize(total_links);
 while(link_count < to_links ){
+
+    auto start = clock.now();
+    
     s = edgeVector[link_count].first;
     t = edgeVector[link_count].second;
     boost::add_edge(s,t,G);
@@ -236,6 +282,11 @@ while(link_count < to_links ){
             mergeComponents(color,u,v);
         }
     }
+    if(profile){
+        auto end = clock.now();
+        auto time = nanosecond_res_diff(end,start);
+        profileMap["incrementalComponents"]+=time;
+    }
     gcHistory[link_count]  = getMutualGCFromDSets();
     //std::cout<<gcHistory[link_count]<<std::endl;
     link_count++;    
@@ -248,6 +299,11 @@ while(link_count < to_links ){
 
 long unsigned ColorNet::getMutualGCFromDSets()
 {
+    if (profile){
+        instant = clock.now();
+    }
+        
+    
     mutualGC.resize(N);
     for(unsigned color=0; color<nColors; color++){
         auto it = antiColorComponentSets[color].get<size>().rbegin();
@@ -290,6 +346,8 @@ long unsigned ColorNet::getMutualGCFromDSets()
         mutualGC[node]=inMutualGC? 1 : 0;
        
     }
+    if (profile)
+        profileMap["getMutualGCFromDSets"]+=nanosecond_res_diff(clock.now(),instant);
 return getMutualGC();
     
 }
@@ -304,13 +362,17 @@ void ColorNet::setFileName(std::string fname){
 
 void ColorNet::writeResults()
 {
-std::ofstream outputFile(outputFileName.c_str());
-outputFile << "{\"N\":"<<N<<",\n";
-outputFile << "\"Nc\":"<<nColors<<",\n";
-outputFile << "\"S_color\":";
-jsonArray(gcHistory,outputFile);
-outputFile << "}\n";
-outputFile.close();
+    std::ofstream outputFile(outputFileName.c_str());
+    outputFile << "{\"N\":"<<N<<",\n";
+    outputFile << "\"Nc\":"<<nColors<<",\n";
+    outputFile << "\"S_color\":";
+    jsonArray(gcHistory,outputFile);
+    if(profile){
+        outputFile << ",\"profile\":";
+        jsonMap(profileMap,outputFile);
+    }
+    outputFile << "}\n";
+    outputFile.close();
 
 }
 

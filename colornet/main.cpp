@@ -16,6 +16,7 @@ int main(int argc, char **argv) {
     unsigned N = 20;
     double fromK=0.1;
     double toK=4;
+    int profile=1;
     string config_file,output_file;
 
     try {
@@ -26,6 +27,7 @@ int main(int argc, char **argv) {
         ("N,N",po::value<unsigned>(&N)->default_value(100), "N")
         ("Nc,c",po::value<unsigned>(&nColors)->default_value(3), "number of colors")
         ("k,k",po::value<double>(&toK)->default_value(5), "average degree which network will be constructed until")
+        ("profile",po::value<int>(&profile)->default_value(1), "generate profiling information overhead should be small")
         ("output,o",po::value<string>(&output_file)->default_value("Color.json"), "output file name (will be in JSON format)")
         ("config",po::value<string>(&config_file)->default_value("color.cfg"), "config file name (options overrided by command line)");
             
@@ -53,6 +55,7 @@ int main(int argc, char **argv) {
     }
 
     ColorNet cn(N,nColors);
+    cn.profileOn(profile>0);
     cn.incrementalComponents(fromK,toK,0);
     cn.setFileName(output_file);
     cn.writeResults();
