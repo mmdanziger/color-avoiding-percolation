@@ -14,6 +14,7 @@
 #include <fstream>
 #include <algorithm>
 #include <stdexcept>
+#include <cmath>
 #include <exception>
 #include <map>
 using std::pair;
@@ -138,20 +139,23 @@ private:
         std::vector<std::vector<Vertex> > antiColorRank;
         std::vector<CompSet> antiColorComponentSets;
         std::vector<long unsigned> gcHistory;
+        std::vector<double> kHistory;
         std::string outputFileName;
         int verbosity;
         std::chrono::high_resolution_clock clock;
         std::chrono::time_point <std::chrono::_V2::system_clock, std::chrono::_V2::system_clock::duration > instant;
         bool profile;
+        bool logspace;
         std::map<std::string,double> profileMap;
 public:
         ColorNet(unsigned int N, unsigned int nColors);
         void setNodeColors();
         void setFileName(std::string fname);
-        void setLinkMeasurementResolution(unsigned resolution);
+        void setLinkMeasurementResolution(int resolution);
         void setFromK(double fromK_);
         void setToK(double toK_);
         void setToKByRange(double range);
+        void setLogSpacing(bool state);
         void profileOn(bool state);
         void blackOutColor(int colorNumber);
         void buildAntiColorComponents();
@@ -173,6 +177,7 @@ ColorNet::ColorNet(unsigned int N, unsigned int nColors):N(N),nColors(nColors),n
     setNodeColors();
     buildNetwork();
     verbosity=0;
+    logspace = false;
 }
 
 void ColorNet::buildNetwork()
@@ -195,6 +200,10 @@ void ColorNet::setToKByRange(double range)
     toK = fromK + range;
 }
 
+void ColorNet::setLogSpacing(bool state)
+{
+    logspace = state;
+}
 
 
 
@@ -208,9 +217,12 @@ void ColorNet::profileOn(bool state)
 }
 
 //This method sets the resolution that we measure S_color.  Ie, 1 means every link, 10 means every 10th link
-void ColorNet::setLinkMeasurementResolution(unsigned int resolution)
+void ColorNet::setLinkMeasurementResolution(int resolution)
 {
     link_res = resolution;
+    if (resolution < 0 )
+        setLogSpacing(true);
+     
 }
 
 
@@ -288,15 +300,20 @@ from_link =  fromK*N/2;
 long link_count = 0;
 long total_links = to_link - from_link;
 buildEdgeVector(to_link);
+int currentPower = 1;
+int nextPower = 10;
 
 try{
-initializeDSets();
+    initializeDSets();
 }catch(std::exception &e){
     std::cerr<< "Failed to initialize DSets:\n";
     std::cerr<<e.what()<<std::endl;
 }
 int s,t,sColor,tColor;
-gcHistory.resize(total_links / link_res + 1);
+if (logspace)
+    gcHistory.reserve(ceil(10*log10(total_links)));
+else
+    gcHistory.resize(total_links / link_res + 1);
 unsigned history_ind=0;
 while(link_count < to_link ){
 
@@ -321,8 +338,21 @@ while(link_count < to_link ){
         auto time = nanosecond_res_diff(end,start);
         profileMap["incrementalComponents"]+=time;
     }
-    if (link_count > from_link && link_count%link_res == 0){
-        gcHistory[history_ind++]  = getMutualGCFromDSets();
+    if(logspace){
+        if ((link_count - from_link) > nextPower){
+            currentPower = nextPower;
+            nextPower = currentPower*10;
+        }
+        if (link_count > from_link && (link_count - from_link)%currentPower == 0){
+            gcHistory.push_back(getMutualGCFromDSets());
+            kHistory.push_back(link_count*2.0/N);
+            history_ind++;
+        }
+    }else{
+        if (link_count > from_link && link_count%link_res == 0){
+            gcHistory[history_ind++]  = getMutualGCFromDSets();
+            kHistory.push_back(link_count*2.0/N);
+        }
     }
     //std::cout<<gcHistory[link_count]<<std::endl;
     link_count++;    
@@ -402,9 +432,14 @@ void ColorNet::writeResults()
     outputFile << "{\"N\":"<<N<<",\n";
     outputFile << "\"Nc\":"<<nColors<<",\n";
     outputFile << "\"from_link\":"<<from_link<<",\n";
-    outputFile << "\"link_res\":"<<link_res<<",\n";
+    if(logspace)
+        outputFile << "\"link_res\": \"logspace\"" <<",\n";
+    else
+        outputFile << "\"link_res\":" << link_res<<",\n";
     outputFile << "\"S_color\":";
     jsonArray(gcHistory,outputFile);
+    outputFile << ",\"k\":";
+    jsonArray(kHistory,outputFile);
     if(profile){
         outputFile << ",\"profile\":";
         jsonMap(profileMap,outputFile);
