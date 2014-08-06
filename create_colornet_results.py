@@ -8,7 +8,7 @@ from time import time
 def do_params(nC):
     global krange, N
     print[krange, nC, N]
-    now = str(time())
+    now = ("%.7f"%time()).replace('.','')[-10:]
     kwargs = {}
     kwargs["N"] = N
     kwargs["krange"] = krange
