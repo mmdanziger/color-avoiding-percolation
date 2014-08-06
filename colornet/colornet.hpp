@@ -7,6 +7,7 @@
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <chrono>
+#include <cassert>
 #include <vector>
 #include <iostream>
 #include <iomanip>
@@ -123,6 +124,10 @@ class ColorNet{
 private:
         unsigned N;
         unsigned nColors;
+        unsigned link_res;
+        unsigned from_link;
+        double fromK;
+        double toK;
         std::vector<int> nodeColors;
         std::vector<pair<int,int> > antiColorGiant;
         std::vector<int> mutualGC;
@@ -143,6 +148,10 @@ public:
         ColorNet(unsigned int N, unsigned int nColors);
         void setNodeColors();
         void setFileName(std::string fname);
+        void setLinkMeasurementResolution(unsigned resolution);
+        void setFromK(double fromK_);
+        void setToK(double toK_);
+        void setToKByRange(double range);
         void profileOn(bool state);
         void blackOutColor(int colorNumber);
         void buildAntiColorComponents();
@@ -150,8 +159,8 @@ public:
         void buildMutualGC();
         void buildNetwork();
         long unsigned getMutualGC();
-        void incrementalComponents(double fromK, double toK, int link_res);
-        void buildEdgeVector(unsigned int to_links);
+        void incrementalComponents();
+        void buildEdgeVector(unsigned int to_link);
         void initializeDSets();
         void mergeComponents(int color, int u, int v);
         long unsigned getMutualGCFromDSets();
@@ -170,6 +179,24 @@ void ColorNet::buildNetwork()
 {
 //For now, we don't do anything here.
 }
+void ColorNet::setFromK(double fromK_)
+{
+    fromK = fromK_>0? fromK_ : nColors / (nColors - 1.0);
+    
+}
+
+void ColorNet::setToK(double toK_)
+{
+    toK = toK_;
+}
+
+void ColorNet::setToKByRange(double range)
+{
+    toK = fromK + range;
+}
+
+
+
 
 void ColorNet::profileOn(bool state)
 {
@@ -178,6 +205,12 @@ void ColorNet::profileOn(bool state)
         profileMap["incrementalComponents"]=0;
         profileMap["getMutualGCFromDSets"]=0;
     }
+}
+
+//This method sets the resolution that we measure S_color.  Ie, 1 means every link, 10 means every 10th link
+void ColorNet::setLinkMeasurementResolution(unsigned int resolution)
+{
+    link_res = resolution;
 }
 
 
@@ -189,12 +222,12 @@ void ColorNet::setNodeColors()
 
 
 
-void ColorNet::buildEdgeVector(unsigned to_links)
+void ColorNet::buildEdgeVector(unsigned to_link)
 {
 
 //use a set to guaruntee unique links (all links are from lower to higher numbers for that reason also)
 boost::unordered_set<std::pair<int,int>> edge_list; 
-while( edge_list.size() < to_links){
+while( edge_list.size() < to_link){
     edge_list.insert(makeEdge("random",N)());   
 }
 //unordered_set is liable to have a non random ordering dependent on the hash function (right?)
@@ -247,14 +280,14 @@ void ColorNet::mergeComponents(int color, int u, int v)
 }
 
 
-void ColorNet::incrementalComponents(double fromK, double toK, int link_res)
+void ColorNet::incrementalComponents()
 {
     
-long to_links = toK*N/2;
-long from_links = 0;
+long to_link = toK*N/2;
+from_link =  fromK*N/2;
 long link_count = 0;
-long total_links = to_links - from_links;
-buildEdgeVector(to_links);
+long total_links = to_link - from_link;
+buildEdgeVector(to_link);
 
 try{
 initializeDSets();
@@ -263,8 +296,9 @@ initializeDSets();
     std::cerr<<e.what()<<std::endl;
 }
 int s,t,sColor,tColor;
-gcHistory.resize(total_links);
-while(link_count < to_links ){
+gcHistory.resize(total_links / link_res + 1);
+unsigned history_ind=0;
+while(link_count < to_link ){
 
     auto start = clock.now();
     
@@ -287,11 +321,13 @@ while(link_count < to_links ){
         auto time = nanosecond_res_diff(end,start);
         profileMap["incrementalComponents"]+=time;
     }
-    gcHistory[link_count]  = getMutualGCFromDSets();
+    if (link_count > from_link && link_count%link_res == 0){
+        gcHistory[history_ind++]  = getMutualGCFromDSets();
+    }
     //std::cout<<gcHistory[link_count]<<std::endl;
     link_count++;    
 }
-
+    gcHistory.resize(history_ind);
 
     
     
@@ -365,6 +401,8 @@ void ColorNet::writeResults()
     std::ofstream outputFile(outputFileName.c_str());
     outputFile << "{\"N\":"<<N<<",\n";
     outputFile << "\"Nc\":"<<nColors<<",\n";
+    outputFile << "\"from_link\":"<<from_link<<",\n";
+    outputFile << "\"link_res\":"<<link_res<<",\n";
     outputFile << "\"S_color\":";
     jsonArray(gcHistory,outputFile);
     if(profile){

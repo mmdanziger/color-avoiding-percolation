@@ -15,7 +15,9 @@ int main(int argc, char **argv) {
     unsigned nColors=3;
     unsigned N = 20;
     double fromK=0.1;
+    double kRange=0.1;
     double toK=4;
+    double deltaK=0.1;
     int profile=1;
     string config_file,output_file;
 
@@ -26,7 +28,10 @@ int main(int argc, char **argv) {
         ("help", "produce help message")
         ("N,N",po::value<unsigned>(&N)->default_value(100), "N")
         ("Nc,c",po::value<unsigned>(&nColors)->default_value(3), "number of colors")
-        ("k,k",po::value<double>(&toK)->default_value(5), "average degree which network will be constructed until")
+        ("k0,",po::value<double>(&fromK)->default_value(-1), "average degree which network will be constructed from, if none supplied, defaults to k_c = N_c/(N_c-1)")
+        ("k,k",po::value<double>(&toK)->default_value(5), "average degree which network will be constructed until.")
+        ("krange,",po::value<double>(&kRange)->default_value(-1), "extent of range of average degrees to sample past k0. If supplied, takes precedence over arg k")
+        ("deltak,d",po::value<double>(&deltaK)->default_value(1), "Calculate S_color every deltak links (1 is unnecesarily detailed)")
         ("profile",po::value<int>(&profile)->default_value(1), "generate profiling information overhead should be small")
         ("output,o",po::value<string>(&output_file)->default_value("Color.json"), "output file name (will be in JSON format)")
         ("config",po::value<string>(&config_file)->default_value("color.cfg"), "config file name (options overrided by command line)");
@@ -56,7 +61,14 @@ int main(int argc, char **argv) {
 
     ColorNet cn(N,nColors);
     cn.profileOn(profile>0);
-    cn.incrementalComponents(fromK,toK,0);
+    cn.setLinkMeasurementResolution(deltaK);
+    //This will set directly if >0 else calculate automatically
+    cn.setFromK(fromK);
+    if(kRange > 0)
+        cn.setToKByRange(kRange);
+    else
+        cn.setToK(toK);
+    cn.incrementalComponents();
     cn.setFileName(output_file);
     cn.writeResults();
     return 0;
