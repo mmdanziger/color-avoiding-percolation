@@ -73,6 +73,38 @@
 \end{tabular}
 
 }
+
+\section{Background}
+
+
+Secure communication in networks of servers and communication lines is
+possible even if a part of servers or lines is faulty. 
+An algorithm was presented already in the 1990s, using sets of paths with disjunct servers \cite{dolev-acm1993}.
+This early study, which gained broad attention in computer science [...],
+abstracted from the network structure and assumed the existence of the paths a priori. 
+If node and link failure occurs with a given probability, 
+percolation theory on complex networks can be used to determine overall connectivity robustness \cite{cohen-book2010,newman-book2010}. 
+In particular, $k$-core percolation \cite{dorogovtsev-prl2006} has interesting implications
+due to the special k-core structure of the AS server network of the
+Internet \cite{tauro-ieee2001,carmi-pnas2007}. 
+The possibility of secure communication was studied as
+well for wireless networks using percolation on spatially embedded
+graphs \cite{pinto-ieee2012}. 
+However, recent security problems where often due to gaps in
+the software, and therefore whole sets of servers will likely fault at
+the same time, if they use the same software version of the OS, transmission
+software etc.
+
+Here we analyze how the secret sharing method can be used to send
+messages in a secret way, even if one software version is faulty and it is
+not known which one. We develop a new kind of percolation theory, where
+paths avoiding every software version must exist at the same time.
+For the AS network we find that secure communication is impossible, if
+there is no heterogeneity of software versions on the highly connected
+servers.
+
+
+
 \section{Question}
 
 Lets assume the generalized configuration model graph ensamble with $N$ nodes, 
@@ -610,6 +642,7 @@ general degree distributions is missing so far.
 \end{figure}
 
 
-
+\bibliographystyle{apsrev4-1}
+\bibliography{mp}
 
 \end{document}
