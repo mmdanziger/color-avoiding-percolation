@@ -28,6 +28,11 @@ typedef VertexIndex* Rank;
 typedef Vertex* Parent;
 typedef boost::disjoint_sets<Rank, Parent> DSet;
 //For millisecond level timing
+#if __GNUC__ <= 4 && __GNUC_MINOR__ < 8
+typedef  std::chrono::time_point <std::chrono::system_clock, std::chrono::system_clock::duration > InstantType;
+#else
+typedef std::chrono::time_point <std::chrono::_V2::system_clock, std::chrono::_V2::system_clock::duration > InstantType;
+#endif
 double nanosecond_res_diff(std::chrono::high_resolution_clock::time_point end, std::chrono::high_resolution_clock::time_point start) {
     return( std::chrono::duration_cast<std::chrono::nanoseconds>(end-start).count() / 1000000000.0);
 }
@@ -143,7 +148,7 @@ private:
         std::string outputFileName;
         int verbosity;
         std::chrono::high_resolution_clock clock;
-        std::chrono::time_point <std::chrono::_V2::system_clock, std::chrono::_V2::system_clock::duration > instant;
+        InstantType instant;
         bool profile;
         bool logspace;
         std::map<std::string,double> profileMap;
