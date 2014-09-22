@@ -22,6 +22,89 @@
 %\pacs{89.65.-s, 05.50.+q, 05.65.+b, 64.60.De}
 \maketitle
 
+\section*{List of variables}
+{\centering
+
+\begin{tabular}{ c c }
+ \hline
+ \multicolumn{2}{ c } {Networks}\\
+ \hline
+ $N$ & Number of nodes \\
+ $\bar k$ & Average degree \\
+ $k_i$ & Degree of node $i$ \\
+ $p_k$ & Degree distribution \\
+ $\alpha$ & Exponent of scale free degree distribution \\
+ $g_0$ & Generating function of degree \\
+ $g_1$ & Generating function of excess degree \\
+ \hline
+ \multicolumn{2}{ c } {Colors}\\
+ \hline
+ $C$ & Number of colors \\
+ $c\in 1,2,\dots C$ & A color \\
+ $r_c$ & Color distribution \\
+ $n_{\rm deg}$ & Degeneration of the highest color frequency \\
+ ${\tilde r}_{c,k}$ & degree-dependent color distribution \\
+ \hline
+ \multicolumn{2}{ c } {Standard percolation ingredients}\\
+ \hline
+ ${\mathcal G}$ & Set of nodes in the giant component (color blind) \\
+ $u$ & Prob.\ of not being connected to giant comp.\ over a link \\
+ $S$ & Size of giant component \\
+ $\phi_{\bar c}$ & Fraction of nodes without color $c$ \\
+ ${\mathcal G}_{\bar c}$ & Set of nodes in the giant component avoiding color c \\
+ $u_{\bar c}$ & Prob.\ of not being connected to color avoiding giant comp.\ over a link \\
+ $S_{\bar c}$ & Size of color avoiding giant component \\
+ \hline
+ \multicolumn{2}{ c } {Percolation over color avoiding paths}\\
+ \hline
+ ${\mathcal G}_{\rm color}$ & Set of nodes which can communicate avoiding all colors \\
+ $S_{\rm color}$ & Size of this component \\
+ $B_{k,k'}$ & Prob.\ that out of $k$ links $k'$ connect to giant component \\
+ $M_{k',\vec \kappa}$ & Prob.\ that out of $k'$ links $\kappa_1$ connect to color 1 etc. \\
+ $P_{\vec \kappa}$ & Success probability having neighbors of colors acc. to $\vec \kappa$ \\
+ $U_{\bar c}$ & Prob.\ that a link fails connecting to ${\mathcal G}_{\rm color}$ which already connects to ${\mathcal G}$ \\
+ $S_{{\rm color},\infty}$ & Size of the set of all nodes being connected to giant component over two links or more \\
+ \hline
+ \hline
+ $\beta$ & Critical exponent \\
+ ${\bar k}_{\rm crit}$ & Critical value of average degree \\
+ $k_{\rm step}$ & Degree above which all nodes have the same color \\
+ $\gamma$ & Fraction of nodes with highest degree \\
+\end{tabular}
+
+}
+
+\section{Background}
+
+
+Secure communication in networks of servers and communication lines is
+possible even if a part of servers or lines is faulty. 
+An algorithm was presented already in the 1990s, using sets of paths with disjunct servers \cite{dolev-acm1993}.
+This early study, which gained broad attention in computer science [...],
+abstracted from the network structure and assumed the existence of the paths a priori. 
+If node and link failure occurs with a given probability, 
+percolation theory on complex networks can be used to determine overall connectivity robustness \cite{cohen-book2010,newman-book2010}. 
+In particular, $k$-core percolation \cite{dorogovtsev-prl2006} has interesting implications
+due to the special k-core structure of the AS server network of the
+Internet \cite{tauro-ieee2001,carmi-pnas2007}. 
+The possibility of secure communication was studied as
+well for wireless networks using percolation on spatially embedded
+graphs \cite{pinto-ieee2012}. 
+However, recent security problems where often due to gaps in
+the software, and therefore whole sets of servers will likely fault at
+the same time, if they use the same software version of the OS, transmission
+software etc.
+
+Here we analyze how the secret sharing method can be used to send
+messages in a secret way, even if one software version is faulty and it is
+not known which one. We develop a new kind of percolation theory, where
+paths avoiding every software version must exist at the same time.
+For the AS network we find that secure communication is impossible, if
+there is no heterogeneity of software versions on the highly connected
+servers.
+
+
+
 \section{Question}
 
 Lets assume the generalized configuration model graph ensamble with $N$ nodes, 
@@ -84,7 +167,7 @@ the average probability $u$, ``that a vertex is not connected to the giant compo
 via its connection to some particular neighboring vertex'' (Newman, page 461): 
 \begin{align}
 u &= g_1(u)\\
-S &= 1 - g_0(u).
+S &= 1 - g_0(u).\label{eq:gc}
 \end{align}
 Lets call the set of all nodes belonging to the giant component as ${\mathcal G}$. 
 Another prerequisite is the existence of a giant component after deleting all nodes of one 
@@ -124,57 +207,68 @@ As we have tested numerically that $S_{\rm color}$ can be used to describe the s
 pairs in connecting over paths with avoided colors, it is useful to assess this quantity 
 analytically. We will do this assuming an infinite, locally treelike network. 
 We calculate $S_{\rm color}$ as the probability, that a randomly chosen node belongs to 
-${\mathcal G}_{\rm color}$. A randomly chosen node has exactly $k$ links with probability $p_k$. We 
-need the probability that these links connect to all components ${\mathcal G}_{\bar c}$. As 
-${\mathcal G}_{\bar c}$ are subsets of ${\mathcal G}$, only links connecting to ${\mathcal G}$ 
-can contribute. We therefore use the conditional probability
-%
+${\mathcal G}_{\rm color}$. 
+
+Let us start with the standard percolation theory. We can rewrite eq.~\ref{eq:gc} for the size of 
+the giant component as 
+%%%
 \begin{align}
-Q_{k,k'} &={k \choose k'}(1-u)^{k'}u^{k-k'}
+S &= \sum_{k=0}^{\infty}p_k \sum_{k'=0}^{k} B_{k,k'} \times \left( 1-\delta_{k',0}\right),\\
+B_{k,k'} &={k \choose k'}(1-u)^{k'}u^{k-k'},
 \end{align}
-%
-that out of $k$ links $k'$ connect to the giant component. Further the distribution of colors 
-among the nodes these links connect to is crucial. 
-%
+%%%
+where $p_k$ is the probability that a randomly chosen node has exactly $k$ links and $B_{k,k'}$
+is the binomial probability that out of these links $k'$ links connect to the giant component. The 
+success probability $\left( 1-\delta_{k',0}\right)$ is zero 
+if there is no link connecting to the giant component and one else. 
+For our problem, this last term has to be replaced. In order to calculate 
+the probability that the $k'$ links connect to all components ${\mathcal G}_{\bar c}$, 
+we first have to consider the distribution of colors among the nodes these links connect to. 
+%%%
 \begin{align}
-R_{k',\vec \kappa} &=\frac{k'!}{\kappa_1! \times \dots \times \kappa_C!} \,
+M_{k',\vec \kappa} &=\frac{k'!}{\kappa_1! \times \dots \times \kappa_C!} \,
 (r_1)^{\kappa_1} \times \dots \times (r_C)^{\kappa_C}\,
 \delta_{k',\kappa_1+\dots + \kappa_C}\label{eq:R_kk}
 \end{align}
-%
-denotes the conditional probability that out of those $k'$ links $\kappa_1$ connect to nodes of 
-color 1, $\kappa_2$ links connect to nodes of color 2 etc. 
+%%%
+denotes the multivariate probability that out of those $k'$ links $\kappa_1$ connect to nodes of 
+color 1, $\kappa_2$ links connect to nodes of color 2 etc. We define $P_{\vec \kappa}$ as the 
+success probability to connect to all components ${\mathcal G}_{\bar c}$ given $\vec \kappa$. 
+With this quantity, which will be evaluated below, we finally can write 
+%%%
+\begin{align}
+S_{\rm color} &= \sum_{k=0}^{\infty}p_k \sum_{k'=0}^{k} B_{k,k'} 
+\sum_{\kappa_1,\dots, \kappa_C=0}^{k'} M_{k',\vec \kappa} 
+P_{\vec \kappa}.\label{eq:s_color}
+\end{align}
 
-Lets now concentrate on one color $c$. We have 
-$k'-\kappa_c$ links which potentially can connect to the desired component ${\mathcal G}_{\bar c}$. 
+For evaluating $P_{\vec \kappa}$, lets first concentrate on one color $c$. We have 
+$\sum_{c'\neq c}\kappa_{c'}$ links which potentially can connect to the desired component ${\mathcal G}_{\bar c}$. 
 According to the choices we have made so far, those links connect to the giant component 
 ${\mathcal G}$ and none of the nodes they are connecting to has color $c$. Therefore, a single 
-of those links does not connect 
-to ${\mathcal G}_{\bar c}$ with the conditional probability 
-%
+of those links fails in connecting to ${\mathcal G}_{\bar c}$ with the conditional probability 
+%%%
 \begin{align}
-U_{\bar c} &= 1 - \frac{1-u_{\bar c}}{(1-u)\phi_{\bar c}}.\label{eq:U_c}
+U_{\bar c} &= 1 - \frac{1-u_{\bar c}}{(1-u)(1-r_c)}.\label{eq:U_c}
 \end{align}
+%%%
 The last term is the probability, that over a single link a connection to ${\mathcal G}_{\bar c}$
 is established, if this link already fulfills the following precondition: 
 It connects to ${\mathcal G}$ and at the same time to a node without color $c$. 
-This precondition has probability $(1-u)\phi_{\bar c}$, as colors are randomly distributed and therefore 
+This precondition has probability $(1-u)(1-r_c)$, as colors are randomly distributed and therefore 
 are not correlated with the probability $u$ or $1-u$. As the links connecting to ${\mathcal G}_{\bar c}$ 
 are a subset of all links fulfilling the precondition, the conditional probability can be 
 calculated by dividing with the probability of the precondition. 
-Notice that the additional information of the explicit color $c'$, instead of only stating that the color 
+Notice that the additional information of the explicit color, instead of only stating that the color 
 is not $c$, does not alter the results, as a further restriction of the colors 
 would meat the numerator and denominator identically and therefore would cancel out. 
-
 There is at least one link connecting to ${\mathcal G}_{\bar c}$ with probability 
-$1-(U_{\bar c})^{k'-\kappa_c}$. The success probabilities for different colors have to be 
+$1-(U_{\bar c})^{\sum_{c'\neq c} \kappa_{c'} }$. The success probabilities for different colors have to be 
 multiplied, as all ${\mathcal G}_{\bar c}$ have to be reached at the same time. 
 Putting everything together we have 
 %
 \begin{align}
-S_{\rm color} &= \sum_{k=0}^{\infty}p_k \sum_{k'=0}^{k} Q_{k,k'} 
-\sum_{\kappa_1,\dots, \kappa_C=0}^{k'} R_{k',\vec \kappa} 
-\prod_{c=1}^C [1-(U_{\bar c})^{k'-\kappa_c}].\label{eq:s_color}
+P_{\vec \kappa} &= \prod_{c=1}^C [1-(U_{\bar c})^{\sum_{c'\neq c} \kappa_{c'} }].\label{eq:p_success}
 \end{align}
 
 Results for Poisson graphs are shown in figure~\ref{fig:model} with the red line, showing 
@@ -188,16 +282,22 @@ numerical results.
 In the limit of high numbers of colors $C$ together with color frequencies $r_c \to 0$, the 
 single paths have to avoid only a small part of nodes. Therefore we expect $U_{\bar c}\to 0$: If a 
 link connects to the colorblind giant component, it will almost never fail to connect to 
-the color avoiding component. We can use this idea to find a limiting case, and to compare 
-to standard percolation. We use $\sum_{k=0}^{\infty}p_k \sum_{k'=0}^{k} Q_{k,k'} 
-\sum_{\kappa_1,\dots, \kappa_C=0}^{k'} R_{k',\vec \kappa} = 1$ (total probability is one) together with 
-the fact that $\prod_{c=1}^C [1-(U_{\bar c})^{k'-\kappa_c}]=0$ whenever $k'<2$ (at least for one 
-color then $k'-\kappa_c=0$). Therefore we have 
+the color avoiding component. Accordingly $P_{\vec \kappa}$ is close to one, if the needed 
+links exist. We can use this idea to find a limiting case for $S_{\rm color}$ in eq.~\ref{eq:s_color}, 
+and to compare to standard percolation. With the upper limit 
+%%%
+\begin{align}
+\sum_{\kappa_1,\dots, \kappa_C=0}^{k'} M_{k',\vec \kappa} 
+P_{\vec \kappa} &\leq 1-\delta_{k',0}-\delta_{k',1}
+\end{align}
+%%%
+and $\sum_{k}p_k \sum_{k'} B_{k,k'} \sum_{\kappa_1,\dots, \kappa_C} M_{k',\vec \kappa} = 1$ 
+(total probability is one) we finally get 
 %
 \begin{align}
-S_{\rm color} &< 1-\sum_{k=0}^{\infty}p_k [u^k +k (1-u) u^{k-1}]\\
+S_{\rm color} &\leq 1-\sum_{k=0}^{\infty}p_k [u^k +k (1-u) u^{k-1}]\\
  &= 1 - g_0(u) - (1-u) \left.\frac{{\rm d}g_0(z)}{{\rm d}z}\right|_{z=u}\\
- &= S_{{\rm color},\infty}.
+ &= S_{{\rm color},\infty}.\label{eq:limit}
 \end{align}
 %
 The upper limit $S_{{\rm color},\infty}$ for $S_{\rm color}$ reflects the fact, that every node has to be 
@@ -208,6 +308,38 @@ close to zero and only nodes fail which have less than two links connecting to t
 This result is closely connected to $k$-core percolation with $k=2$. Note that $k$-core percolation shows 
 a continuous phase transition for $k=2$, and only for $k>2$ has the well known discontinuous behavior. 
 
+\subsection{Degree-dependent color distributions}\label{subsec:degree}
+
+Our framework can be generalized to color distributions  
+${\tilde r}_{c,k}$ additionally depending on the degree $k$ of the nodes. For an easier overview 
+here all the needed equations. The following equations stay unchanged, 
+%%%
+\begin{align}
+S_{\rm color} &= \sum_{k=0}^{\infty}p_k \sum_{k'=0}^{k} B_{k,k'} 
+\sum_{\kappa_1,\dots, \kappa_C=0}^{k'} M_{k',\vec \kappa} 
+P_{\vec \kappa},\\
+B_{k,k'} &={k \choose k'}(1-u)^{k'}u^{k-k'},\\
+u &= g_1(u),\quad g_1(z)=\sum_k q_k z^k,\\
+M_{k',\vec \kappa} &=\frac{k'!}{\kappa_1! \times \dots \times \kappa_C!} \,
+(r_1)^{\kappa_1} \times \dots \times (r_C)^{\kappa_C}\,
+\delta_{k',\kappa_1+\dots + \kappa_C},\\
+P_{\vec \kappa} &= \prod_{c=1}^C [1-(U_{\bar c})^{\sum_{c'\neq c} \kappa_{c'} }],\\
+U_{\bar c} &= 1 - \frac{1-u_{\bar c}}{(1-u)(1-r_c)},
+\end{align}
+%%%
+while including modified quantities $r_c$ and $u_{\bar c}$ according to 
+%%%
+\begin{align}
+r_c &= \sum_k k p_k {\tilde r}_{c,k}/{\bar k},\\
+u_{\bar c} &= 1- f_1(1) +  f_1(u_{\bar c}),\quad f_1(z)=\sum_k q_k (1-{\tilde r}_{c,k+1}) z^k.
+\end{align}
+%%%
+$r_c$ is the average probability to find color $c$ over a link, including the fact that 
+high degree nodes are reached more probably and therefore the colors on high degree nodes 
+are found with higher probability. The self-consistency equation for $u_{\bar c}$ is 
+well known from standard percolation theory. 
+
+
 
 \section{Results}
 
@@ -216,12 +348,14 @@ a continuous phase transition for $k=2$, and only for $k>2$ has the well known d
 
 \begin{figure}[htb]
 \begin{center}
-	\includegraphics[width=0.7\columnwidth]{S_color_k.pdf}
+	\includegraphics[width=0.5\columnwidth]{S_color_poisson.pdf}
 	\caption{Dependence of $S_{\rm color}$ on the average degree for different number of colors. 
-	Symbols show numerical results, the straight lines analytical results. For comparison, 
+	Symbols show numerical results for networks of size $N=1000$ 
+	(blue squares for $C=10$ and green circles for $C=2$ colors), 
+	the straight lines show the according analytical results. For comparison, 
 	the giant component size $S$ is shown (black dashed). $S_{\rm color}$ is reduced due to two mechanisms: First, 
 	every node has to be connected to the giant component via two links. The according fraction of 
-	nodes $S_{{\rm color},\infty}$ is shown with a red dashed line. Second, increasing color frequencies 
+	nodes $S_{{\rm color},\infty}$ is shown with a red dotted line. Second, increasing color frequencies 
 	further decrease $S_{\rm color}$.}
 	\label{fig:poisson}
 \end{center}
@@ -230,16 +364,17 @@ a continuous phase transition for $k=2$, and only for $k>2$ has the well known d
 In figure~\ref{fig:poisson} the dependence of $S_{\rm color}$ on the average degree is shown for different numbers 
 of colors $C$ ($r_c=1/C$). Comparing to the standard giant component size $S$ (dashed black line in the figure), 
 the percolation sets in at increasing $\bar k$ with smaller numbers of colors, and the component size grows 
-slower to the saturation value of one. The circles show numerical results with $N=1000$ and 10 network realizations, 
+slower to the saturation value of one. The symbols show numerical results with $N=1000$ and 100 network realizations, 
 the lines show results of equation~\ref{eq:s_color}, both correspond well. 
 
 The suppression of the number of connected nodes can be understood as a combination of two effects. 
-The first effect is purely topological and can be understood with $S_{{\rm color},\infty}$ 
-(shown with dashed red line). It means that only nodes can belong to $S_{\rm color}$, which are connected 
+The first effect is purely topological and can be understood with $S_{{\rm color},\infty}$ of eq.~\ref{eq:limit}
+(shown with dotted red line). It means that only nodes can belong to $S_{\rm color}$, which are connected 
 to the colorblind giant component over at least two links. We can confirm that 
-$S_{\rm color}\to S_{{\rm color},\infty}$ for high numbers of colors $C$ with the results for $C=50$.
+$S_{\rm color}$ comes close to $S_{{\rm color},\infty}$ for high numbers of colors $C$ with the results for $C=10$.
 $S_{{\rm color},\infty}$ is remarkably reduced compared to $S$ for small $k$, but has the same critical parameter. 
-For the Poisson graph we have $S_{\rm color,\infty}=S-{\bar k} S (1-S)$, and for small positive ${\bar k}-1$ 
+For the Poisson graph we have $g_0(z)=\exp({\bar k}(z-1))$ and $S=1-u$ and therefore 
+$S_{\rm color,\infty}=S-{\bar k} S (1-S)$, and for small positive ${\bar k}-1$ 
 the giant component grows approximately with $S\approx 2 ({\bar k}-1)/{\bar k}^2$. Therefore
 \begin{align}
 S_{\rm color,\infty}\approx 2({\bar k}-1)^2/\bar k,
@@ -274,9 +409,9 @@ distributions $r_c$.
 With general color distributions $r_c$ ($\sum_c r_c =1$), the color with the largest probability 
 $r_c$ dominates 
 the behavior, as it corresponds to the largest conditional link failure probability $U_{\bar c}$
-in equation~\ref{eq:s_color}. For Poisson graphs, $U_{\bar c}$ 
-falls below one at ${\bar k}=1/(1-r_c)$, and as long as one $U_{\bar c}$ is one, equation~\ref{eq:s_color}
-gives zero. Therefor the critical value is 
+in equation~\ref{eq:p_success}. For Poisson graphs, $U_{\bar c}$ 
+falls below one at ${\bar k}=1/(1-r_c)$, and as long as one $U_{\bar c}$ is one, equation~\ref{eq:p_success}
+gives always zero. Therefor the critical value is 
 \begin{align}
 {\bar k}_{\rm crit}=1/(1-\max_c r_c).
 \end{align}
@@ -287,19 +422,72 @@ frequency and $C=10$ colors. We see the same critical value, but different criti
 $S_{\rm color} \propto ({\bar k}-{\bar k}_{\rm crit})^{\beta}$.
 This analytical result can be confirmed with numerical results, as shown on the bottom of the figure. 
 
-We can understand the critical exponent with expanding equation~\ref{eq:s_color} using 
-$U_{\bar c}=1-\varepsilon$ for the highest color frequency. First of all, we have 
-$(U_{\bar c})^{k'-\kappa_c}\approx 1-(k'-\kappa_c)\times \varepsilon$, and therefore we find 
-$\prod_{c=1}^C [1-(U_{\bar c})^{k'-\kappa_c}]\propto \varepsilon^{n_{\rm deg}}$ if $k'-\kappa_c>0$ or 
-$\prod_{c=1}^C [1-(U_{\bar c})^{k'-\kappa_c}]=0$ else. As
-equation~\ref{eq:s_color} is therefore a superposition of either vanishing terms or terms with 
-leading order $\varepsilon^{n_{\rm deg}}$, and we know from standard percolation that 
-$\varepsilon\propto ({\bar k}-{\bar k}_{\rm crit})$, we have 
+
+We can understand the critical exponent with expanding equation~\ref{eq:p_success} using 
+$U_{\bar c}=1-\varepsilon$ for the highest color frequency. 
+We will show below using results from standard percolation that 
+$\varepsilon\propto ({\bar k}-{\bar k}_{\rm crit})$. First of all, we have 
+$(U_{\bar c})^{\sum_{c'\neq c} \kappa_{c'} }\approx 1-({\sum_{c'\neq c} \kappa_{c'} })\times \varepsilon$, and therefore we find 
+$P_{\vec \kappa} \propto \varepsilon^{n_{\rm deg}}$ (unless $P_{\vec \kappa} = 0$ in the case ${\sum_{c'\neq c} \kappa_{c'} }=0$
+for any $c$). As equation~\ref{eq:s_color} is therefore a superposition of either vanishing terms or terms with 
+leading order $\varepsilon^{n_{\rm deg}}$, we have 
+%%%
 \begin{align}
 \beta=n_{\rm deg}.
 \end{align}
+%%%
+To complete the discussion of the critical behavior, we have to show that 
+$1- U_{\bar c}\propto ({\bar k}-{\bar k}_{\rm crit})$ for a certain region of critical behavior. 
+We know from standard percolation theory for Poisson graphs that $S \propto ({\bar k}-1)^1$, and therefore 
+$1-u({\bar k})\approx a \times ({\bar k}-1)$ for $\bar k$ exceeding the critical value 
+about small values. With inserting into equation~\ref{eq:u_c} it can be shown that 
+$u_{\bar c}({\bar k})=1-\phi_{\bar c}+\phi_{\bar c}u({\bar k}\phi)$. Using this in 
+equation~\ref{eq:U_c} ($\phi_{\bar c}=1-r_c$), we find 
+%%%
+\begin{align}
+U_{\bar c} &= 1 - \frac{1-u({\bar k}\phi_{\bar c})}{1-u({\bar k})}\\
+&\approx 1- \phi_{\bar c} \frac{{\bar k}-{\bar k}_{\rm crit}}{{\bar k}-1}
+\end{align}
+%%%
+which drops linearly from one in the critical region
+%%%
+\begin{align}
+0< {\bar k}-{\bar k}_{\rm crit} &\ll {\bar k}_{\rm crit}-1.
+\end{align}
+%%%
+In figure~\ref{fig:pt} we have ${\bar k}_{\rm crit}-1=1/2$, and critical behavior up to 
+about ${\bar k}-{\bar k}_{\rm crit}=1/10$.
 
-\clearpage
+As a final remark let us discuss the critical behavior for largest color frequencies which 
+are not perfectly degenerated. Lets assume two colors with close by values 
+${\bar k}_1< {\bar k}_2$, where $U_{\bar c}$ drops below one. With equation~\ref{eq:p_success} and the definition 
+$\varepsilon={\bar k}-{\bar k}_2$ we have above ${\bar k}_2$ that 
+$P_{\vec \kappa} \propto \varepsilon \times (\varepsilon+({\bar k}_2 - {\bar k}_1))$. This 
+is dominated by a linear term for small $\varepsilon$ and by a quadratic term for larger 
+values, the crossover is at about
+%%%
+\begin{align}
+{\bar k}-{\bar k}_2 &= {\bar k}_2-{\bar k}_1.
+\end{align}
+%%%
+Exceeding the critical value ${\bar k}_{\rm crit}={\bar k}_2$ about more than the 
+distance ${\bar k}_2 - {\bar k}_1$, $S_{\rm color}$ behaves as 
+if the color frequencies would be degenerated. 
+
+With these results altogether we can understand the behavior of $S_{\rm color}$ 
+for small frequencies of all colors (compare to the blue squares and line in 
+figure~\ref{fig:poisson} with $r_c=1/10$ for all colors). There is a deviation 
+from $S_{{\rm color},\infty}$ due to $S_{\rm color}=0$ below ${\bar k}_{\rm crit}$, and 
+above there is a region of slow critical growth with large critical exponent $\beta$. This region acts as an effective 
+shift of the critical parameter. Further increasing $\bar k$, $U_{\bar c}$ saturates smoothly to zero for all colors. 
+Accordingly, $S_{\rm color}$ has a smooth rise to finite values, but not governed by a certain critical exponent. 
+It comes closer to $S_{{\rm color},\infty}$ without reaching it, as there are other effects (e.g. nodes with 
+exactly two links can connect to two nodes of the same color). The smaller the highest color frequencies are, 
+the closer $S_{\rm color}$ is to $S_{{\rm color},\infty}$.
+
+
+
+%\clearpage
 
 
 \subsection{Broad degree distribution}
@@ -313,8 +501,7 @@ $\varepsilon\propto ({\bar k}-{\bar k}_{\rm crit})$, we have
 \end{figure}
 
 In figure~\ref{fig:broad}, results for graphs with broad degree distributions with 
-$p_k=n k^{-\alpha}$ are shown. $n$ is a normalization constant, and the giant component 
-exists between $\alpha=2$ and $\alpha=3.5$. We see a strong reduction of 
+$p_k=n k^{-\alpha}$ are shown. $n$ is a normalization constant. We see a strong reduction of 
 $S_{{\rm color},\infty}$ compared to $S$, while the number of colors ($r_c=1/C$) plays 
 a minor role. Numerical results are averages over 50 networks of size $N=10\,000$. 
 For evaluating equation~\ref{eq:s_color}, 1000 events where sampled for every $k$. 
@@ -322,13 +509,16 @@ For evaluating equation~\ref{eq:s_color}, 1000 events where sampled for every $k
 
 \begin{figure}[htb]
 \begin{center}
-	\includegraphics[width=0.6\columnwidth]{S_color_degree_dependent.pdf}
-	\caption{$S_{\rm color}$ drops fast, if a fraction $\gamma$ of nodes with the highest 
+	\includegraphics[width=0.49\columnwidth]{S_color_degree_dependent_broad.pdf}
+    \includegraphics[width=0.49\columnwidth]{S_color_degree_dependent_poisson.pdf}
+	\caption{Left: On graphs with broad degree distribution, $S_{\rm color}$ drops fast, 
+	if a fraction $\gamma$ of nodes with the highest 
 	degree is restricted to one color, while the nodes with smaller degree can have one of 
-	two colors. This is shown for a network with $\alpha=2.3$ and $N=10000$ with symbols. 
-	Analytical results need a modified version of equation~\ref{eq:s_color} as described 
-	in the text. Results are shown with the blue line. 	Without diversity 
-	on the hubs, nodes cannot communicate in the desired way.}
+	two colors. This is shown for networks with $\alpha=2.3$ and $\alpha=2.5$ having $N=10000$ 
+	with symbols. Analytical results need the modified version of equation~\ref{eq:s_color} 
+	as described in section~\ref{subsec:degree}. Results are shown with straight lines. Without diversity 
+	on the hubs, nodes cannot communicate in the desired way. Right: For comparison results on a Poisson 
+	graph are shown, where a large fraction of nodes has to be of one color to hinder communication.}
 	\label{fig:degree}
 \end{center}
 \end{figure}
@@ -338,66 +528,56 @@ heterogeneity, as a dependence of frequencies on the degree of a node can strong
 influence the behavior. We used two colors, where the first color has a frequency 
 of ${\tilde r}_{1,k}=1$ for all degrees $k\geq k_{\rm step}$ larger than a certain 
 $k_{\rm step}$. These nodes have a probability of 
-$\gamma=\sum_{k=k_{\rm step}}^{\infty} p_k {\tilde r}_{1,k}$. Accordingly 
-${\tilde r}_{2,k}=0$ for $k\geq k_{\rm step}$, and probabilities for smaller degrees are chosen such 
-that $\sum_k p_k {\tilde r}_{c,k}=1/2$, meaning that every color on average occupies one 
-half of the nodes. Figure~\ref{fig:degree} shows results for an ensemble with 
-$\alpha=2.3$. Analytical results show that already for a portion of $\gamma=1.4\%$
-of the largest nodes occupied by the first color exclusively, $S_{\rm color}$ vanishes. 
-Numerical results with $N=10000$ confirm this behavior, but show finite size effects. 
+$\gamma=\sum_{k=k_{\rm step}}^{\infty} p_k$. Accordingly 
+${\tilde r}_{2,k}=0$ for $k\geq k_{\rm step}$, and probabilities for smaller degrees are chosen as 
+${\tilde r}_{c,k}=1/2$. Figure~\ref{fig:degree} on the left shows results for an ensemble with 
+$\alpha=2.3$ and $\alpha=2.5$. The analytical results for $\alpha=2.3$ show that already for a portion 
+of $\gamma=1.4\%$ of the largest nodes occupied by the first color exclusively, $S_{\rm color}$ vanishes. 
+These results were calculated as described in section~\ref{subsec:degree}. 
+Numerical results confirm this behavior, but show finite size effects. 
+On the right of the figure, results for Poisson graphs are shown. We see that for narrow 
+degree distributions the effect of dominance of one color on the nodes of highest degrees 
+is much smaller. Therefore, graphs with narrow degree distributions are much more robust 
+for providing connection over color avoiding paths. 
 
-{\color{red} Move the following to appendix and explain in more detail, repeating all equations needed with 
-replacements?}. For the analytical results, 
-Equation~\ref{eq:s_color} had to be adapted for the degree dependence of colors: 
-The ingredient $R_{k',\vec \kappa}$ as given in equation~\ref{eq:R_kk} had to be calculated 
-with the replacement $r_c \to \sum_k k p_k {\tilde r}_{c,k}/{\bar k}$ which gives the average probability 
-to find a color $c$ following a random link. The same replacement of $r_c$ has to be done for 
-$\phi_{\bar c}=1-r_c$ in equation~\ref{eq:U_c} for calculating $U_{\bar c}$. Finally, for calculating 
-$u_{\bar c}$ as needed in the same equation, equation~\ref{eq:u_c} has to be modified: 
-$u_{\bar c} = 1- f_1(1) +  f_1(u_{\bar c})$ has to be solved with the modified generating function 
-of excess degree $f_1(z)=\sum_k q_k (1-{\tilde r}_{c,k}) z^k$.
 
 
 \subsection{Application: Network of autonomous systems}
 
 \begin{figure}[htb]
 \begin{center}
-    \includegraphics[width=0.6\columnwidth]{S_color_data_degree_dependent.pdf}
-    \caption{Blue symbols show results For the network of autonomous systems, where colors are 
+    \includegraphics[width=0.49\columnwidth]{S_color_degree_dependent_data.pdf}
+    \caption{Red circles show results for the network of autonomous systems, where colors are 
     distributed in the same way as in figure~\ref{fig:degree}. Averages were taken over 10 color 
-    distributions. Analytical results for an ensemble of infinite size and power law tail 
-    ($\alpha=2.0304$) are shown with the red line and reproduce the results qualitatively. 
+    distributions. Analytical results are shown with the black line and reproduce the results qualitatively. 
     Deviations are due to degree-degree-correlations which are reserved in shuffled networks shown 
-    with blue symbols, while results with ignoring correlations are shown with light blue symbols.}
+    with green squares, while results with ignoring correlations are shown with blue diamonds.}
     \label{fig:as}
 \end{center}
 \end{figure}
 
-The blue symbols in figure~\ref{fig:as} show results for the autonomous systems network, where colors 
+The red circles in figure~\ref{fig:as} show results for the autonomous systems network, where colors 
 where distributed with degree-dependence over the nodes as described at the end of the last section. 
 Averages where taken over 10 realizations of the color distributions. As expected from our results 
-for scale free degree distributions, the $S_{\rm color}$ drops to 0 even for small fraction $\gamma$ 
+for scale free degree distributions, $S_{\rm color}$ drops to 0 even for small fraction $\gamma$ 
 which is exclusively of one color. That means that if there is no heterogeneity in the highly 
 connected servers, it is not possible to avoid e.g. software versions. This is also 
 interesting in the following sense: It is known that secret services try to store all decrypted data 
-running through servers they get to decrypt it later. As this is connected to technical afford, 
+running through servers to decrypt it later. As this is connected to technical afford, 
 the services will more likely monitor the large servers. Therefore it would be beneficial, if once 
 using encryption, to sent parts of the message using small servers. Unfortunately, this seems to 
 be impossible, the services only have to monitor a low percentage of servers to hinder alternative 
 paths. 
 
-In order to assess the predictive power of our analytical method, we used a model ensemble. Up to 
-$k=10$, the degree distribution of the autonomous systems was used. For higher degrees, the tail 
-was assumed to be a power law and the exponent was fitted using maximum likelihood to be 
-$\alpha \approx2.0304$. Results for the according ensemble are shown with the red line. The qualitative 
+In order to assess the predictive power of our analytical method, we used a model ensemble with 
+using the degree frequencies of the autonomous systems network as degree distribution $p_k$. 
+Results for the according ensemble are shown with the black line. The qualitative 
 behavior is represented well. To understand deviations, we compared to data from shuffled networks 
 starting with the original data. Shuffling with ignoring degree-degree-correlations while only 
-keeping the degree sequence gives results close to the analytical results (light blue symbols).  
+keeping the degree sequence gives results close to the analytical results (blue diamonds). 
 Shuffling with also keeping degree-degree-correlations gives results close to the original network 
-(green symbols). 
+(green squares). 
 Therefore, deviations between our theory and the data arise mainly due to degree-degree-correlations. 
-
-
 
 
 
@@ -462,6 +642,7 @@ general degree distributions is missing so far.
 \end{figure}
 
 
-
+\bibliographystyle{apsrev4-1}
+\bibliography{mp}
 
 \end{document}
