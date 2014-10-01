@@ -31,6 +31,8 @@ This problem arises, for instance, in a p2p network running different unpatched 
 and when considering AS-level listeners in the entry and exit to the Tor network.
 
 We present a general analysis of this problem on random graphs including analytic solutions for \er and scale-free networks and numerical simulations confirming our calculations and further numerical tests on real-world networks including the internet, partitioned by AS.
+
+Surprisingly, we find that increased software heterogeneity may actually improve security.
 \end{abstract}
 %\pacs{89.65.-s, 05.50.+q, 05.65.+b, 64.60.De}
 \maketitle
@@ -43,9 +45,9 @@ For instance, on a p2p network, there may be different versions of the software 
 In such a case, though there may be unpatched or even undiscovered bugs affecting a given version, it is unlikely that all of the versions will be compromised by the same group at the same time.
 In such a case, a sensible strategy for secure communication may be to divide the message and transmit it along different paths so that \textit{no single version} receives the entire message.
 
-This problem also arises when attempting to safeguard anonymity with the Tor network.  
-Recent work has shown that if the same autonomous system (AS) controls a router on the path from the source to the entry node of the Tor network and also a router on the path from the exit node to the destination, the identity of source and destination can be deduced from a statistical analysis of the traffic pattern and the anonymity of the Tor network is broken.
-Since a relatively small number of AS's control the entire internet, this scenario is a serious concern.
+This problem also arises when attempting to safeguard anonymity with the Tor network \cite{dingledine-proceedings2004}.  
+Recent work has shown that if the same autonomous system (AS) controls a router on the path from the source to the entry node of the Tor network and also a router on the path from the exit node to the destination, the identity of source and destination can be deduced from a statistical analysis of the traffic pattern and the anonymity of the Tor network is broken \cite{murdoch-proceedings2007}.
+Since a relatively small number of AS's control the entire internet, this scenario is a serious concern \cite{edman-proceedings2009}.
 
 Here we examine this problem on general network topologies several partitioning rules.  
 We do not consider here the implementation details of such a communication strategy but rather show under what circumstances it would be possible in principle.
@@ -56,5 +58,6 @@ A pair of nodes is securely connectable iff there exist a set of paths connectin
 To calculate this property we begin by examining color-avoiding connected components.
 For every color $c$, the color avoiding component is defined as all nodes which can be reached when the $c$-colored nodes are removed.
 
-
+\bibliographystyle{apsrev4-1}
+\bibliography{mp}
 \end{document}
