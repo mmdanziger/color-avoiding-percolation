@@ -1,0 +1,63 @@
+\documentclass[aps, prl, twocolumn, a4paper, floatfix]{revtex4}
+%\documentclass[twocolumn]{revtex4}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{placeins}
+\usepackage{color}
+\usepackage{hyperref}
+%\usepackage{bug}
+%\bibliographystyle{plain}
+\newcommand{\er}{Erd\H{o}s-R\'{e}nyi}
+\newcommand{\kk}{\langle k \rangle}
+
+
+
+\begin{document}
+
+\title{Secure message passing on networks with insecure nodes}
+\author{Sebastian M.\ Krause}
+\affiliation{Ruder Boskovic Institute, Zagreb, Croatia}
+\author{Vinko Zlatic}
+\affiliation{Ruder Boskovic Institute, Zagreb, Croatia}
+\author{Michael M.\ Danziger}
+\affiliation{Deptartment of Physics, Bar Ilan University, Ramat Gan, Israel}
+
+
+\begin{abstract}
+It is often necessary to transmit a message across a network when parts of the network are not secure.
+Here, we consider the case of a network partitioned into sets of nodes with the assumption that no single subset can be trusted.
+As such, the message needs to be divided and transmitted on multiple paths so that no subset sees the entire message.
+This problem arises, for instance, in a p2p network running different unpatched software versions 
+and when considering AS-level listeners in the entry and exit to the Tor network.
+
+We present a general analysis of this problem on random graphs including analytic solutions for \er and scale-free networks and numerical simulations confirming our calculations and further numerical tests on real-world networks including the internet, partitioned by AS.
+\end{abstract}
+%\pacs{89.65.-s, 05.50.+q, 05.65.+b, 64.60.De}
+\maketitle
+
+Secure and anonymous communication over networks, in particular the internet, has become a central question facing the global community.
+In light of widespread state-surveillance, large-scale cybercrime and superbugs like ``Heartbleed,'' one can no longer assume that an entire communications network is secure.
+However, the network insecurity may be disjoint.  
+For instance, on a p2p network, there may be different versions of the software running at the same time.  
+In such a case, though there may be unpatched or even undiscovered bugs affecting a given version, it is unlikely that all of the versions will be compromised by the same group at the same time.
+A sensible strategy for securing the communication would then be to divide the message and transmit it in such a way that \textit{no single version} receives the entire message.
+This problem arises when attempting to safeguard anonymity with the Tor network.  
+Recent work has shown that if the same autonomous system (AS) controls a router on the path from the source to the entry node of the Tor network and also a router from the exit node to the destination, the anonymity of the Tor network is broken.
+Since a relatively small number of AS's control the entire internet, this scenario is a serious concern.
+
+Here we examine this problem on general network topologies.  
+We begin with a formal definition of the problem and its relationship to percolation theory and then proceed to demonstrate a number of key properties on random graphs and sample measurements on real-world networks, including the AS-level internet.
+
+To analyze this problem, we consider a network for which each node is assigned exactly one color.
+A pair of nodes is color connectable iff there exist a set of paths connecting the nodes such that no color appears on all of the paths.  
+
+
+When passing a message through a network, there may be sets of insecure nodes.
+Assuming the message can be split and that the message can only be reconstructed from the entire 
+
+Many networks are naturally partitioned into different sets which are not 
+
+When passing information across a network, the network which is partitioned into sets, each one of which is considered insecure.
+
+
+\end{document}
