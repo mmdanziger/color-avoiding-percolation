@@ -1,8 +1,11 @@
 #! /usr/bin/env python
 from __future__ import division
 from itertools import product as iproduct
-from subprocess import call
+from subprocess import call,check_output
+from os.path import dirname,join
 from time import time
+
+get_fstype = lambda path : check_output(["stat","-f","-c",r"%T", path]).strip()
 
 
 def do_params(nC):
@@ -14,12 +17,16 @@ def do_params(nC):
     kwargs["krange"] = krange
     kwargs["Nc"] = nC
 
-    kwargs["output"] = "Color_scaling_N=%i_nC=%i_krange=%.4f_%s.json" % (N, nC, krange, now)
+    outfname = "Color_scaling_N=%i_nC=%i_krange=%.4f_%s.json" % (N, nC, krange, now)
+    fstype = get_fstype(".")
+    kwargs["output"] = outfname if fstype != 'nfs' else join("/tmp",outfname)
     kwarray = ["colornet"]
     for k, v in kwargs.items():
         kwarray.append("--" + k)
         kwarray.append(str(v))
     call(kwarray)
+    if fstype == 'nfs':
+        call(["mv", join("/tmp",outfname), outfname])
     return 0
 
 
@@ -27,9 +34,9 @@ if __name__ == '__main__':
     from sys import argv
 
     krange = 1
-    N = 10000000
-    nc_min = 3
-    nc_max = 3
+    N = 1000000
+    nc_min = 2
+    nc_max = 6
     repititions = 20
     nc_vals = [i for i in range(nc_min, nc_max + 1)] * repititions
     try:
