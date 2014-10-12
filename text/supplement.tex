@@ -81,148 +81,91 @@
 
 
 
-\section{Theory}
+\section{Size of giant avoidable colors component in the configuration model}
 
-\subsection{Connection to percolation}
+\subsection{Graph ensembles with color distributions}
 
-
-\begin{figure}[htb]
-  \begin{minipage}[b]{0.35\linewidth}
-    \begin{center}
-    \includegraphics[width=0.99\columnwidth]{sets_k_all.pdf}\\
-      \vspace{40mm}
-   \end{center}
-  \end{minipage}
-  \begin{minipage}[b]{0.1\linewidth}
-    \begin{center}
-      {\huge ?\\$\longrightarrow$\\}
-      \vspace{60mm}
-    \end{center}
-  \end{minipage}
-  \begin{minipage}[b]{0.35\linewidth}
-    \begin{center}
-    \includegraphics[width=0.99\columnwidth]{sets_k_gc_no_2.pdf}\\
-     \vspace{-1mm}
-    \includegraphics[clip,width=0.99\columnwidth]{sets_k_gc_no_3.pdf}\\
-     \vspace{-1mm}
-    \includegraphics[width=0.99\columnwidth]{sets_k_gc_no_1.pdf}
-   \end{center}
-  \end{minipage}
-    \caption{Important illustration.}
-    \label{fig:1}
-\end{figure}
-
-
+\subsection{Question and connection to percolation theory}
 
 \begin{figure}[htb]
-  \begin{minipage}[b]{0.35\linewidth}
+  \begin{minipage}[b]{0.18\linewidth}
     \begin{center}
-    \includegraphics[width=0.99\columnwidth]{sets_k_all.pdf}\\
-%      {\huge ? $\downarrow$}\\
-     \vspace{7mm}
-    \includegraphics[width=0.99\columnwidth]{sets_k_gc_no_2.pdf}\\
-%     \vspace{-4mm}
-    \includegraphics[trim=0 0 0 190,clip,width=0.99\columnwidth]{sets_k_gc_no_3.pdf}\\
-%     \vspace{-4mm}
-    \includegraphics[trim=0 0 0 190,clip,width=0.99\columnwidth]{sets_k_gc_no_1.pdf}
+      \includegraphics[width=0.99\columnwidth]{sets_gc_all1.pdf}
    \end{center}
   \end{minipage}
-  \begin{minipage}[b]{0.1\linewidth}
+  \begin{minipage}[b]{0.05\linewidth}
     \begin{center}
-      $B_{k,k'}$\\
-      {\huge $\longrightarrow$\\}
-      \vspace{50mm}
-      {\huge$\longleftarrow$\\}
-      \vspace{3mm}
-      $P_{\vec \kappa}$\\
-      \vspace{30mm}
-    \end{center}
-  \end{minipage}
-  \begin{minipage}[b]{0.35\linewidth}
-    \begin{center}
-    \includegraphics[width=0.99\columnwidth]{sets_k_gc.pdf}\\
-    {\huge $\downarrow$} $M_{k',\vec{\kappa}}$\\
-    \includegraphics[width=0.99\columnwidth]{sets_k_no_2_gc.pdf}\\
-%     \vspace{-4mm}
-    \includegraphics[trim=0 0 0 190,clip,width=0.99\columnwidth]{sets_k_no_3_gc.pdf}\\
-%     \vspace{-4mm}
-    \includegraphics[trim=0 0 0 190,clip,width=0.99\columnwidth]{sets_k_no_1_gc.pdf}
-   \end{center}
-  \end{minipage}
-    \caption{Important illustration.}
-    \label{fig:1}
-\end{figure}
-%
-
-
-\begin{figure}[htb]
-  \begin{minipage}[b]{0.3\linewidth}
-    \begin{center}
-    \includegraphics[width=0.99\columnwidth]{sets_1_all.pdf}\\
-    \includegraphics[width=0.99\columnwidth]{sets_1_all.pdf}\\
-    \includegraphics[width=0.99\columnwidth]{sets_1_all.pdf}\\
-    \includegraphics[width=0.99\columnwidth]{sets_1_no_2_gc.pdf}\\
-   \end{center}
-  \end{minipage}
-  \begin{minipage}[b]{0.1\linewidth}
-    \begin{center}
-      $u$\\
-      {\huge $\longrightarrow$\\}
-      \vspace{24mm}
-      $r_{\rm g}$\\
-      {\huge $\longrightarrow$\\}
-      \vspace{24mm}
-      $u_{\bar{\rm g}}$\\
-      {\huge $\longrightarrow$\\}
-      \vspace{24mm}
-      $U_{\bar{\rm g}}$\\
-      {\huge $\longrightarrow$\\}
+      {\Large $\xrightarrow{u}$}\\
       \vspace{15mm}
     \end{center}
   \end{minipage}
-  \begin{minipage}[b]{0.3\linewidth}
+  \begin{minipage}[b]{0.18\linewidth}
     \begin{center}
-    \includegraphics[width=0.99\columnwidth]{sets_1_no_gc.pdf}\\
-    \includegraphics[width=0.99\columnwidth]{sets_1_c2.pdf}\\
-    \includegraphics[width=0.99\columnwidth]{sets_1_gc_no_gc_no_2.pdf}\\
-    \includegraphics[width=0.99\columnwidth]{sets_1_no_2_gc_no.pdf}\\
-   \end{center}
+      \includegraphics[width=0.99\columnwidth]{sets_gc_no1.pdf}
+    \end{center}
   \end{minipage}
-    \caption{Important illustration.}
+  \begin{minipage}[b]{0.05\linewidth}
+  \ 
+  \end{minipage}
+  \begin{minipage}[b]{0.18\linewidth}
+    \begin{center}
+      \includegraphics[width=0.99\columnwidth]{sets_gc_allk.pdf}
+    \end{center}
+  \end{minipage}
+  \begin{minipage}[b]{0.07\linewidth}
+    \begin{center}
+      {\Large $\xrightarrow{1-u^k}$}\\
+      \vspace{15mm}
+    \end{center}
+  \end{minipage}
+  \begin{minipage}[b]{0.18\linewidth}
+    \begin{center}
+      \includegraphics[width=0.99\columnwidth]{sets_gc_gck.pdf}
+    \end{center}
+  \end{minipage}
+    \caption{We base our theory on the method to calculate the size of 
+    normal giant components, as illustrated in this figure. Using a self 
+    consistency equation, the probability $u$ can be calculated. This is the 
+    probability, that a node is not connected to the giant component over a 
+    single link (see on the left). On the right, the probability for a node 
+    with $k$ links is illustrated to have at least one link connecting to 
+    the giant component. $u^k$ is the probability that all links fail.}
     \label{fig:1}
 \end{figure}
+
+
 
 
 \begin{figure}[htb]
-  \begin{minipage}[b]{0.3\linewidth}
+  \begin{minipage}[b]{0.245\linewidth}
     \begin{center}
-    \includegraphics[width=0.99\columnwidth]{sets_1_all.pdf}\\
-      \vspace{20mm}
+    \includegraphics[width=0.99\columnwidth]{sets_k_all.pdf}
    \end{center}
   \end{minipage}
-  \begin{minipage}[b]{0.2\linewidth}
+  \begin{minipage}[b]{0.1\linewidth}
     \begin{center}
-      $(1-u)(1-r_{\rm g})$\\
-      {\huge $\longrightarrow$\\}
+      {\Large $\xrightarrow{?}$}\\
       \vspace{20mm}
-      $1-u_{\bar{\rm g}}$\\
-      {\huge $\longrightarrow$\\}
-      \vspace{18mm}
     \end{center}
   \end{minipage}
-  \begin{minipage}[b]{0.3\linewidth}
+  \begin{minipage}[b]{0.6\linewidth}
     \begin{center}
-    \includegraphics[width=0.99\columnwidth]{sets_1_no_2_gc.pdf}\\
-    {\huge $\downarrow$} $1-U_{\bar{\rm g}}$\\
-    \includegraphics[width=0.99\columnwidth]{sets_1_gc_no_2.pdf}\\
+    \includegraphics[height=0.4\columnwidth]{sets_k_gc_no_2.pdf}
+     \hspace{-1mm}
+    \includegraphics[trim=100 0 0 0,clip,height=0.4\columnwidth]{sets_k_gc_no_3.pdf}
+     \hspace{-1mm}
+    \includegraphics[trim=100 0 0 0,clip,height=0.4\columnwidth]{sets_k_gc_no_1.pdf}
    \end{center}
   \end{minipage}
-    \caption{Important illustration.}
+    \caption{We have to calculate the probability, if a node with $k$ links is 
+    for every color $c$ connected to the giant component $G_{\bar c}$ with deleted 
+    color $c$. All connections over at least one link have to exist at the same 
+    time. We illustrate this question with the three colors red ($c=$r), green 
+    ($c=$g) and blue ($c=$b). If a link connects to $G_{\bar{\rm g}}$, it for 
+    sure does not connect to $G_{\bar c}$ for one of the other colors. This kind of 
+    dependence forces us to use a stepwise calculation with conditional probabilities.}
     \label{fig:1}
 \end{figure}
-
-
-
 
 
 %
@@ -239,6 +182,54 @@ u &= g_1(u)\\
 S &= 1 - g_0(u).\label{eq:gc}
 \end{align}
 Lets call the set of all nodes belonging to the giant component as ${\mathcal G}$. 
+
+As we have tested numerically that $S_{\rm color}$ can be used to describe the success of node 
+pairs in connecting over paths with avoided colors, it is useful to assess this quantity 
+analytically. We will do this assuming an infinite, locally treelike network. 
+We calculate $S_{\rm color}$ as the probability, that a randomly chosen node belongs to 
+${\mathcal G}_{\rm color}$. 
+
+Let us start with the standard percolation theory. We can rewrite eq.~\ref{eq:gc} for the size of 
+the giant component as 
+%%%
+\begin{align}
+S &= \sum_{k=0}^{\infty}p_k \sum_{k'=0}^{k} B_{k,k'} \times \left( 1-\delta_{k',0}\right),\\
+B_{k,k'} &={k \choose k'}(1-u)^{k'}u^{k-k'},
+\end{align}
+%%%
+where $p_k$ is the probability that a randomly chosen node has exactly $k$ links and $B_{k,k'}$
+is the binomial probability that out of these links $k'$ links connect to the giant component. The 
+success probability $\left( 1-\delta_{k',0}\right)$ is zero 
+if there is no link connecting to the giant component and one else. 
+
+
+\subsection{One link probabilities}
+
+
+
+\begin{figure}[htb]
+   \begin{center}
+    \includegraphics[width=0.22\columnwidth]{sets_1_all.pdf}
+    \includegraphics[width=0.22\columnwidth]{sets_1_all.pdf}
+    \includegraphics[width=0.22\columnwidth]{sets_1_all.pdf}
+    \includegraphics[width=0.22\columnwidth]{sets_1_no_2_gc.pdf}\\
+     \vspace{3mm}
+      {\large \hspace{5mm} $\downarrow u$\hspace{34mm}$\downarrow r_{\rm g}$ 
+      \hspace{34mm}$\downarrow u_{\bar{\rm g}}$ \hspace{34mm}$\downarrow U_{\bar{\rm g}}$}\\
+     \vspace{3mm}
+    \includegraphics[width=0.22\columnwidth]{sets_1_no_gc.pdf}
+    \includegraphics[width=0.22\columnwidth]{sets_1_c2.pdf}
+    \includegraphics[width=0.22\columnwidth]{sets_1_gc_no_gc_no_2.pdf}
+    \includegraphics[width=0.22\columnwidth]{sets_1_no_2_gc_no.pdf}
+   \end{center}
+  \caption{Probabilities for a single link to connect to different parts of the network. We 
+  use these probabilities as primitives to calculate the probability for many links. While 
+  $u$, $r_c$ and $u_{\bar c}$ can be calculated with standard methods invented for the 
+  configuration model before, the conditional probability $U_{\bar c}$ can be calculated as 
+  a combination of the others.}
+  \label{fig:primitives}
+\end{figure}
+
 Another prerequisite is the existence of a giant component after deleting all nodes of one 
 of the colors $c$. Lets call the analogue of $u$ after all nodes of color $c$ are 
 deleted as $u_{\bar c}$, the set of all nodes in the remaining giant component as 
@@ -254,9 +245,127 @@ holds: For every color $c$ there exists at least one neighbor belonging to
 ${\mathcal G}_{\bar c}$. The set of all nodes fulfilling this 
 condition is $L_{\rm color}$, and its size as $S_{\rm color}$. 
 
+According to the choices we have made so far, those links connect to the giant component 
+${\mathcal G}$ and none of the nodes they are connecting to has color $c$. Therefore, a single 
+of those links fails in connecting to ${\mathcal G}_{\bar c}$ with the conditional probability 
+%%%
+\begin{align}
+U_{\bar c} &= 1 - \frac{1-u_{\bar c}}{(1-u)(1-r_c)}.\label{eq:U_c}
+\end{align}
+%%%
+The last term is the probability, that over a single link a connection to ${\mathcal G}_{\bar c}$
+is established, if this link already fulfills the following precondition: 
+It connects to ${\mathcal G}$ and at the same time to a node without color $c$. 
+This precondition has probability $(1-u)(1-r_c)$, as colors are randomly distributed and therefore 
+are not correlated with the probability $u$ or $1-u$. As the links connecting to ${\mathcal G}_{\bar c}$ 
+are a subset of all links fulfilling the precondition, the conditional probability can be 
+calculated by dividing with the probability of the precondition. 
+Notice that the additional information of the explicit color, instead of only stating that the color 
+is not $c$, does not alter the results, as a further restriction of the colors 
+would meat the numerator and denominator identically and therefore would cancel out. 
 
 
-\subsection{Analytical results for the percolation problem}
+\begin{figure}[htb]
+  \begin{minipage}[b]{0.22\linewidth}
+    \begin{center}
+    \includegraphics[width=0.99\columnwidth]{sets_1_all.pdf}\\
+      \vspace{50mm}
+   \end{center}
+  \end{minipage}
+  \begin{minipage}[b]{0.15\linewidth}
+    \begin{center}
+      $(1-u)(1-r_{\rm g})$\\
+      {\Large $\rightarrow$\\}
+      \vspace{20mm}
+      $1-u_{\bar{\rm g}}$\\
+      {\Large $\searrow$\\}
+      \vspace{35mm}
+    \end{center}
+  \end{minipage}
+  \begin{minipage}[b]{0.22\linewidth}
+    \begin{center}
+    \includegraphics[width=0.99\columnwidth]{sets_1_no_2_gc.pdf}\\
+     \vspace{3mm}
+    {\large $\downarrow$} $1-U_{\bar{\rm g}}$\\
+     \vspace{3mm}
+    \includegraphics[width=0.99\columnwidth]{sets_1_gc_no_2.pdf}\\
+   \end{center}
+  \end{minipage}
+    \caption{This figure illustrates the calculation of $U_{\bar{\rm g}}$ 
+    using the equality $(1-u)(1-r_{\rm g})(1-U_{\bar{\rm g}})=1-u_{\bar{\rm g}}$. For 
+    that, we have assumed independence of the qualities of the link under 
+    consideration, especially of the color it connects to and if it connects to 
+    the giant component. }
+    \label{fig:1}
+\end{figure}
+
+
+
+\subsection{Averaging over link distributions}
+
+
+
+
+\begin{figure}[htb]
+  \begin{minipage}[b]{0.245\linewidth}
+    \begin{center}
+    \includegraphics[width=0.99\columnwidth]{sets_k_all.pdf}
+   \end{center}
+  \end{minipage}
+  \begin{minipage}[b]{0.1\linewidth}
+    \ 
+  \end{minipage}
+  \begin{minipage}[b]{0.6\linewidth}
+    \begin{center}
+    \includegraphics[height=0.4\columnwidth]{sets_k_gc_no_2.pdf}
+     \hspace{-1mm}
+    \includegraphics[trim=100 0 0 0,clip,height=0.4\columnwidth]{sets_k_gc_no_3.pdf}
+     \hspace{-1mm}
+    \includegraphics[trim=100 0 0 0,clip,height=0.4\columnwidth]{sets_k_gc_no_1.pdf}
+   \end{center}
+  \end{minipage}\\
+     \vspace{3mm}
+      {\large \hspace{-30mm} $\downarrow B_{k,k'}$\hspace{90mm}$\uparrow P_{\vec \kappa}$ }\\
+     \vspace{3mm}
+  \begin{minipage}[b]{0.245\linewidth}
+    \begin{center}
+    \includegraphics[width=0.99\columnwidth]{sets_k_gc.pdf}
+   \end{center}
+  \end{minipage}
+  \begin{minipage}[b]{0.1\linewidth}
+    \begin{center}
+      {\Large $\xrightarrow{M_{k',\vec{\kappa}}}$}\\
+      \vspace{20mm}
+    \end{center}
+  \end{minipage}
+  \begin{minipage}[b]{0.6\linewidth}
+    \begin{center}
+    \includegraphics[height=0.4\columnwidth]{sets_k_no_2_gc.pdf}
+     \hspace{-1mm}
+    \includegraphics[trim=100 0 0 0,clip,height=0.4\columnwidth]{sets_k_no_3_gc.pdf}
+     \hspace{-1mm}
+    \includegraphics[trim=100 0 0 0,clip,height=0.4\columnwidth]{sets_k_no_1_gc.pdf}
+   \end{center}
+  \end{minipage}
+    \caption{For calculating the probability of a node with $k$ links to belong to 
+    $G_{\rm color}$, we have to average over different link constellations which this node 
+    might show. First, $B_{k,k'}$ is the probability that out of the $k$ links $k'$ 
+    connect to the giant component. It is calculated using $u$ (compare figure~\ref{fig:primitives} 
+    on the left). Second, $M_{k',\vec{\kappa}}$ gives the probability for a certain color 
+    distribution among the links. It is calculated using $r_{\rm g}$ etc. (compare 
+    figure~\ref{fig:primitives}, second from left). We assume that this second step is 
+    independent of the first step, what is confirmed with the final results. Third, 
+    $P_{\vec \kappa}$ gives the joint probability that for this color distribution 
+    $G_{\bar{\rm r}}$, $G_{\bar{\rm b}}$ and $G_{\bar{\rm g}}$ are connected to at 
+    the same time. This is calculated using $U_{\bar{\rm r}}$ etc. (compare 
+    figure~\ref{fig:primitives} on the right). We tested numerically that e.g. 
+    $U_{\bar{\rm r}}$ and $U_{\bar{\rm b}}$ are independent for a link connecting 
+    to the giant component and color green.}
+    \label{fig:1}
+\end{figure}
+
+
+
 
 As we have tested numerically that $S_{\rm color}$ can be used to describe the success of node 
 pairs in connecting over paths with avoided colors, it is useful to assess this quantity 
@@ -332,36 +441,6 @@ $G_{\bar c}$ simultaneously. Instead of evaluating the sums over $k'$ and $\vec 
 in eq.~\ref{eq:s_color}, we sampled 5000 events for every $k$.The outcome compares well with 
 numerical results. 
 
-\subsection{Limiting case of small color frequencies}
-
-In the limit of high numbers of colors $C$ together with color frequencies $r_c \to 0$, the 
-single paths have to avoid only a small part of nodes. Therefore we expect $U_{\bar c}\to 0$: If a 
-link connects to the colorblind giant component, it will almost never fail to connect to 
-the color avoiding component. Accordingly $P_{\vec \kappa}$ is close to one, if the needed 
-links exist. We can use this idea to find a limiting case for $S_{\rm color}$ in eq.~\ref{eq:s_color}, 
-and to compare to standard percolation. With the upper limit 
-%%%
-\begin{align}
-\sum_{\kappa_1,\dots, \kappa_C=0}^{k'} M_{k',\vec \kappa} 
-P_{\vec \kappa} &\leq 1-\delta_{k',0}-\delta_{k',1}
-\end{align}
-%%%
-and $\sum_{k}p_k \sum_{k'} B_{k,k'} \sum_{\kappa_1,\dots, \kappa_C} M_{k',\vec \kappa} = 1$ 
-(total probability is one) we finally get 
-%
-\begin{align}
-S_{\rm color} &\leq 1-\sum_{k=0}^{\infty}p_k [u^k +k (1-u) u^{k-1}]\\
- &= 1 - g_0(u) - (1-u) \left.\frac{{\rm d}g_0(z)}{{\rm d}z}\right|_{z=u}\\
- &= S_{{\rm color},\infty}.\label{eq:limit}
-\end{align}
-%
-The upper limit $S_{{\rm color},\infty}$ for $S_{\rm color}$ reflects the fact, that every node has to be 
-connected to the giant component at least over two links. It therefore includes a reduction 
-compared to the standard percolation result $1-g_0(u)$. In the limit of many colors and small 
-probabilities $r_c$, $S_{\rm color}$ can come close to $S_{{\rm color},\infty}$, as in this case $U_{\bar c}$ comes 
-close to zero and only nodes fail which have less than two links connecting to the giant component. 
-This result is closely connected to $k$-core percolation with $k=2$. Note that $k$-core percolation shows 
-a continuous phase transition for $k=2$, and only for $k>2$ has the well known discontinuous behavior. 
 
 \subsection{Degree-dependent color distributions}\label{subsec:degree}
 
@@ -395,6 +474,40 @@ are found with higher probability. The self-consistency equation for $u_{\bar c}
 well known from standard percolation theory. 
 
 
+\section{Limiting cases of the theory}
+
+
+
+\subsection{Limiting case of small color frequencies}
+
+In the limit of high numbers of colors $C$ together with color frequencies $r_c \to 0$, the 
+single paths have to avoid only a small part of nodes. Therefore we expect $U_{\bar c}\to 0$: If a 
+link connects to the colorblind giant component, it will almost never fail to connect to 
+the color avoiding component. Accordingly $P_{\vec \kappa}$ is close to one, if the needed 
+links exist. We can use this idea to find a limiting case for $S_{\rm color}$ in eq.~\ref{eq:s_color}, 
+and to compare to standard percolation. With the upper limit 
+%%%
+\begin{align}
+\sum_{\kappa_1,\dots, \kappa_C=0}^{k'} M_{k',\vec \kappa} 
+P_{\vec \kappa} &\leq 1-\delta_{k',0}-\delta_{k',1}
+\end{align}
+%%%
+and $\sum_{k}p_k \sum_{k'} B_{k,k'} \sum_{\kappa_1,\dots, \kappa_C} M_{k',\vec \kappa} = 1$ 
+(total probability is one) we finally get 
+%
+\begin{align}
+S_{\rm color} &\leq 1-\sum_{k=0}^{\infty}p_k [u^k +k (1-u) u^{k-1}]\\
+ &= 1 - g_0(u) - (1-u) \left.\frac{{\rm d}g_0(z)}{{\rm d}z}\right|_{z=u}\\
+ &= S_{{\rm color},\infty}.\label{eq:limit}
+\end{align}
+%
+The upper limit $S_{{\rm color},\infty}$ for $S_{\rm color}$ reflects the fact, that every node has to be 
+connected to the giant component at least over two links. It therefore includes a reduction 
+compared to the standard percolation result $1-g_0(u)$. In the limit of many colors and small 
+probabilities $r_c$, $S_{\rm color}$ can come close to $S_{{\rm color},\infty}$, as in this case $U_{\bar c}$ comes 
+close to zero and only nodes fail which have less than two links connecting to the giant component. 
+This result is closely connected to $k$-core percolation with $k=2$. Note that $k$-core percolation shows 
+a continuous phase transition for $k=2$, and only for $k>2$ has the well known discontinuous behavior. 
 
 
 \subsection{Critical behavior for Poisson graphs}
