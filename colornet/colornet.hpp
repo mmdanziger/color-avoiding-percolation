@@ -27,6 +27,7 @@ typedef boost::graph_traits<Graph>::vertices_size_type VertexIndex;
 typedef VertexIndex* Rank;
 typedef Vertex* Parent;
 typedef boost::disjoint_sets<Rank, Parent> DSet;
+typedef long double KType;
 //For millisecond level timing
 #if __GNUC__ <= 4 && __GNUC_MINOR__ < 8
 typedef  std::chrono::time_point <std::chrono::system_clock, std::chrono::system_clock::duration > InstantType;
@@ -38,7 +39,7 @@ double nanosecond_res_diff(std::chrono::high_resolution_clock::time_point end, s
 }
 
 //Function to write jsonArray from any iterable to any stream (file or cout)
-template <typename T, typename Stream> void  jsonArray(T toPrint, Stream &stream, double Norm=1)
+template <typename T, typename Stream> void  jsonArray(T toPrint, Stream &stream, long double Norm=1)
 {
     stream<<"[";
     bool firstVal=true;
@@ -49,9 +50,9 @@ template <typename T, typename Stream> void  jsonArray(T toPrint, Stream &stream
         firstVal=false;
 
         if(Norm == 1)
-            stream << val;
+            stream << std::setprecision(15) << val;
         else
-            stream <<val / Norm;
+            stream << std::setprecision(15) << val / Norm;
 
     }
     stream<<"]";
@@ -59,7 +60,7 @@ template <typename T, typename Stream> void  jsonArray(T toPrint, Stream &stream
 }  
 
 //Function to write json dictionary from any map to any stream (file or cout)
-template <typename T, typename Stream> void  jsonMap(T toPrint, Stream &stream, double Norm=1)
+template <typename T, typename Stream> void  jsonMap(T toPrint, Stream &stream, long double Norm=1)
 {
     stream<<"{";
     bool firstVal=true;
@@ -70,9 +71,9 @@ template <typename T, typename Stream> void  jsonMap(T toPrint, Stream &stream, 
         firstVal=false;
         stream << "\"" << val.first << "\" : ";
         if(Norm == 1)
-            stream << std::setprecision(10) << val.second;
+            stream << std::setprecision(15) << val.second;
         else
-            stream <<std::setprecision(10) << val.second / Norm;
+            stream <<std::setprecision(15) << val.second / Norm;
 
     }
     stream<<"}";
@@ -132,8 +133,8 @@ private:
         unsigned nColors;
         unsigned link_res;
         unsigned from_link;
-        double fromK;
-        double toK;
+        KType fromK;
+        KType toK;
         std::vector<int> nodeColors;
         std::vector<pair<int,int> > antiColorGiant;
         std::vector<int> mutualGC;
@@ -144,7 +145,7 @@ private:
         std::vector<std::vector<Vertex> > antiColorRank;
         std::vector<CompSet> antiColorComponentSets;
         std::vector<long unsigned> gcHistory;
-        std::vector<double> kHistory;
+        std::vector<KType> kHistory;
         std::string outputFileName;
         int verbosity;
         std::chrono::high_resolution_clock clock;
@@ -157,9 +158,9 @@ public:
         void setNodeColors();
         void setFileName(std::string fname);
         void setLinkMeasurementResolution(int resolution);
-        void setFromK(double fromK_);
-        void setToK(double toK_);
-        void setToKByRange(double range);
+        void setFromK(KType fromK_);
+        void setToK(KType toK_);
+        void setToKByRange(KType range);
         void setLogSpacing(bool state);
         void profileOn(bool state);
         void blackOutColor(int colorNumber);
@@ -189,18 +190,18 @@ void ColorNet::buildNetwork()
 {
 //For now, we don't do anything here.
 }
-void ColorNet::setFromK(double fromK_)
+void ColorNet::setFromK(KType fromK_)
 {
     fromK = fromK_>0? fromK_ : nColors / (nColors - 1.0);
     
 }
 
-void ColorNet::setToK(double toK_)
+void ColorNet::setToK(KType toK_)
 {
     toK = toK_;
 }
 
-void ColorNet::setToKByRange(double range)
+void ColorNet::setToKByRange(KType range)
 {
     toK = fromK + range;
 }
@@ -356,7 +357,7 @@ while(link_count < to_link ){
     }else{
         if (link_count > from_link && link_count%link_res == 0){
             gcHistory[history_ind++]  = getMutualGCFromDSets();
-            kHistory.push_back(link_count*2.0/N);
+            kHistory.push_back(link_count*2.0L/N);
         }
     }
     //std::cout<<gcHistory[link_count]<<std::endl;
