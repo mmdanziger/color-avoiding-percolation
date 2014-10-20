@@ -29,7 +29,7 @@ for iii in arange(7):
         (not1,not2,not3)=(True,True,True)
         (Lnot1,Lnot2,Lnot3)=(True,True,True)
         links=[1.4]
-        text(-0.08,1.05,r'$G$',color='k',fontsize=25)
+        text(-0.08,1.05,r'$\mathcal{L}$',color='k',fontsize=25)
     if mode=='no_gc':
         (L,notL)=(False,True)
         (c1,c2,c3)=(True,True,True)
@@ -78,7 +78,7 @@ for iii in arange(7):
             if Lnot2:
                 w=mpatches.Wedge((r*cos(2.*pi/3),r*sin(2.*pi/3)),r,120,300,fill=(not not1),edgecolor='w',facecolor='r')
                 ax.add_patch(w)
-                text(-.47,.25,r'$G_{\bar{\rm g}}$',color='w',fontsize=25)
+                text(-.47,.25,r'$\mathcal{L}_{\bar{\rm g}}$',color='w',fontsize=25)
                 #text(-.6,.23,r'$G$',color='w',fontsize=23)
             elif white:
                 w=mpatches.Wedge((r*cos(2.*pi/3),r*sin(2.*pi/3)),r,120,300,fill=True,edgecolor='w',facecolor='w')
@@ -88,7 +88,7 @@ for iii in arange(7):
                 ax.add_patch(w)
                 #c=mpatches.Circle((-.47,-.2),.3,fill=(not not1),edgecolor='w',facecolor='r')
                 #ax.add_patch(c)
-                text(-.49,-.32,r'$G_{\bar{\rm b}}$',color='w',fontsize=25)
+                text(-.49,-.32,r'$\mathcal{L}_{\bar{\rm b}}$',color='w',fontsize=25)
                 #text(-.6,-.35,r'$G$',color='w',fontsize=23)
         if c2:
             if not2:
@@ -97,12 +97,12 @@ for iii in arange(7):
             if Lnot1:
                 w=mpatches.Wedge((r,0.),r,180,360,fill=(not not2),edgecolor='w',facecolor='g')
                 ax.add_patch(w)
-                text(.3,-.23,r'$G_{\bar{\rm r}}$',color='w',fontsize=25)
+                text(.3,-.23,r'$\mathcal{L}_{\bar{\rm r}}$',color='w',fontsize=25)
                 #text(.35,-.3,r'$G$',color='w',fontsize=23)
             if Lnot3:
                 w=mpatches.Wedge((r*cos(2.*pi/3),-r*sin(2.*pi/3)),r,240,60,fill=(not not2),edgecolor='w',facecolor='g')
                 ax.add_patch(w)
-                text(-.2,-.5,r'$G_{\bar{\rm b}}$',color='w',fontsize=25)
+                text(-.2,-.5,r'$\mathcal{L}_{\bar{\rm b}}$',color='w',fontsize=25)
                 #text(-.2,-.55,r'$G$',color='w',fontsize=23)
         if c3:
             if not3:
@@ -111,12 +111,12 @@ for iii in arange(7):
             if Lnot1:
                 w=mpatches.Wedge((r,0.),r,0,180,fill=(not not3),edgecolor='w',facecolor='b')
                 ax.add_patch(w)
-                text(.3,.12,r'$G_{\bar{\rm r}}$',color='w',fontsize=25)
+                text(.3,.12,r'$\mathcal{L}_{\bar{\rm r}}$',color='w',fontsize=25)
                 #text(.35,.2,r'$G$',color='w',fontsize=23)
             if Lnot2:
                 w=mpatches.Wedge((r*cos(2.*pi/3),r*sin(2.*pi/3)),r,300,120,fill=(not not3),edgecolor='w',facecolor='b')
                 ax.add_patch(w)
-                text(-.20,.41,r'$G_{\bar{\rm g}}$',color='w',fontsize=25)
+                text(-.20,.41,r'$\mathcal{L}_{\bar{\rm g}}$',color='w',fontsize=25)
                 #text(-.2,.45,r'$G$',color='w',fontsize=23)
             elif white:
                 w=mpatches.Wedge((r*cos(2.*pi/3),r*sin(2.*pi/3)),r,300,120,fill=True,edgecolor='w',facecolor='w')

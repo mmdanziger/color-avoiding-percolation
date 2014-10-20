@@ -25,18 +25,18 @@ for iii in arange(4):
     if mode=='allk':
         (L,notL)=(True,True)
         links=[1.1,1.2,1.3,1.45]
-        text(-0.08,1.05,r'$G$',color='k',fontsize=25)
+        text(-0.08,1.05,r'$\mathcal{L}$',color='k',fontsize=25)
         text(0.9,1.3,r'$k$ links',color='k',fontsize=20)
     if mode=='all1':
         (L,notL)=(True,True)
         links=[1.4]
-        text(-0.08,1.05,r'$G$',color='k',fontsize=25)
+        text(-0.08,1.05,r'$\mathcal{L}$',color='k',fontsize=25)
         text(0.9,1.3,r'$1$ link',color='k',fontsize=20)
     if mode=='gck':
         (L,notL)=(True,False)
         links=[1.1,1.2]
-        text(-0.08,1.05,r'$G$',color='k',fontsize=25)
-        text(0.7,1.3,r'$>0$ linkss',color='k',fontsize=20)
+        text(-0.08,1.05,r'$\mathcal{L}$',color='k',fontsize=25)
+        text(0.7,1.3,r'$>0$ links',color='k',fontsize=20)
     if mode=='no1':
         (L,notL)=(False,True)
         links=[1.45]
