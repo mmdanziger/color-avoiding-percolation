@@ -52,11 +52,11 @@ def plot_full_Scolor_curve(fname):
 
 
 def plot_all_curves(glob_arg):
-    ds = map(plot_full_Scolor_curve, glob(glob_arg))
+    ds = list(map(plot_full_Scolor_curve,glob(glob_arg)))
     plt.xlabel(r"$<k>$")
     plt.ylabel(r"$S_color$")
     plt.legend(loc=2)
-
+    return ds
 
 def plot_above_kc(d):
     # this is from Sebastian's write-up:
@@ -64,10 +64,14 @@ def plot_above_kc(d):
     N_links_c = lambda N, Nc: int(2 * N * kc(Nc))
     N = d['N']
     Nc = d['Nc']
-    k = np.array(range(len(d['S_color']))) * 2 / d['N'] - kc(Nc)
-    S_color = np.array(d['S_color']) / d['N']
-    plt.loglog(k, S_color, '.-', label="$N_c=%i$" % d['Nc'])
-    plt.show()
+    #k = np.array(range(len(d['S_color'])))*2/d['N'] - kc(Nc)
+    k = np.array(d['k']) - kc(Nc)
+    S_color = np.array(d['S_color'])/d['N']
+    try:
+        plt.loglog(k, S_color , '.-', label="$N_c=%i$"%d['Nc'])
+        plt.show()
+    except ValueError:
+        print("Unable to plot, max k is %.5f and max S_color is %.5f"%(max(k),max(S_color)))
     #plt.loglog(k[N_links_c(N,Nc):], S_color[N_links_c(N,Nc):] , label="$N_c=%i$"%d['Nc'])
     return k, S_color
 
@@ -79,3 +83,15 @@ def plot_fits(preloaded=None, glob_arg=None):
         ds = preloaded
     to_return = map(plot_above_kc, ds)
     return to_return
+
+def plot_averaged_fits(curves):
+    S_avg = np.mean([i[1] for i in curves],axis=0)
+    S_err = np.std([i[1] for i in curves],axis=0)
+    k = np.mean([i[0] for i in curves],axis=0)
+    k_err = np.std([i[0] for i in curves],axis=0)
+    if sum(k_err) < 1e-7:
+        plt.errorbar(k,S_avg,yerr=S_err)
+    else:
+        plt.errorbar(k,S_avg,xerr=k_err,yerr=S_err)
+    plt.plot(k,S_avg,lw=3)
+    return k,S_avg,S_err
