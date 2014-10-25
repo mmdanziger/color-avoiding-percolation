@@ -39,3 +39,11 @@ I'm not a super git ninja (most of my experience is with mercurial) but I think 
 
 * You can edit the files directly online if you'd prefer.
 * I highly recommend switching from HTTPS to SSH.  Just copy your public key into the designated box in your account settings and switch from https to ssh as detailed at https://help.github.com/articles/changing-a-remote-s-url . This way you never have to type in authentication information.
+
+####Future Questions####
+========================
+
+* After we've calculated L_color, there are nodes which are part, nodes which are needed for others to connect and nodes which are dead.  
+What is the measure of each category?
+
+* How is the process of calculating L_color from L_cbar related to other multiplex problems?
