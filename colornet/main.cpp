@@ -14,6 +14,7 @@ int main(int argc, char **argv) {
     srand(static_cast<unsigned>(getpid()) * std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
     unsigned nColors=3;
     unsigned N = 20;
+    int steps;
     double fromK=0.1;
     double kRange=0.1;
     double toK=4;
@@ -32,6 +33,7 @@ int main(int argc, char **argv) {
         ("k,k",po::value<double>(&toK)->default_value(5), "average degree which network will be constructed until.")
         ("krange",po::value<double>(&kRange)->default_value(-1), "extent of range of average degrees to sample past k0. If supplied, takes precedence over arg k")
         ("deltak,d",po::value<double>(&deltaK)->default_value(-1), "Calculate S_color every deltak links (1 is unnecesarily detailed), if not supplied, logspaced")
+        ("steps,s",po::value<int>(&steps)->default_value(100), "Number of steps to sample.  Currently only implemented in conjunction with logspacing")
         ("profile",po::value<int>(&profile)->default_value(1), "generate profiling information overhead should be small")
         ("output,o",po::value<string>(&output_file)->default_value("Color.json"), "output file name (will be in JSON format)")
         ("config",po::value<string>(&config_file)->default_value("color.cfg"), "config file name (options overrided by command line)");
@@ -62,12 +64,14 @@ int main(int argc, char **argv) {
     ColorNet cn(N,nColors);
     cn.profileOn(profile>0);
     cn.setLinkMeasurementResolution(deltaK);
+
     //This will set directly if >0 else calculate automatically
     cn.setFromK(fromK);
     if(kRange > 0)
         cn.setToKByRange(kRange);
     else
         cn.setToK(toK);
+    cn.setLinkMeasurementStepCount(steps);
     cn.incrementalComponents();
     cn.setFileName(output_file);
     cn.writeResults();

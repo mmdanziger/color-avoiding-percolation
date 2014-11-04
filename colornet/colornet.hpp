@@ -146,6 +146,7 @@ private:
         std::vector<CompSet> antiColorComponentSets;
         std::vector<long unsigned> gcHistory;
         std::vector<KType> kHistory;
+        std::vector<int> linksToMeasure;
         std::string outputFileName;
         int verbosity;
         std::chrono::high_resolution_clock clock;
@@ -162,8 +163,10 @@ public:
         void setToK(KType toK_);
         void setToKByRange(KType range);
         void setLogSpacing(bool state);
+        void setLinkMeasurementStepCount(int steps);        
         void profileOn(bool state);
         void blackOutColor(int colorNumber);
+        void calculateLogspace(double start_power, double end_power, int steps);
         void buildAntiColorComponents();
         std::pair<int,int> getMaxPair( vector< int > components, int num);
         void buildMutualGC();
@@ -175,6 +178,7 @@ public:
         void mergeComponents(int color, int u, int v);
         long unsigned getMutualGCFromDSets();
         void writeResults();
+
 
 };
 //TODO: Add method which adds one link at a time and keeps modifying the giant component, like the algorithm Newman showed
@@ -211,7 +215,28 @@ void ColorNet::setLogSpacing(bool state)
     logspace = state;
 }
 
+void ColorNet::setLinkMeasurementStepCount(int steps)
+{
+    calculateLogspace(-4,log10(toK-fromK),steps);
+}
 
+void ColorNet::calculateLogspace(double start_power, double end_power, int steps)
+{
+    linksToMeasure.clear();
+    KType delta = (end_power - start_power) / (steps +1);
+    fromK + delta;
+    int lastPush=-1;
+    for (int i=0; i<steps; ++i){
+        //std::cout<< "pushing back (" <<fromK<<" + 10^( " <<start_power << " + " << i*delta << ") )* "<< N/2 << " : ";
+        //std::cout<< static_cast<int>( (fromK + exp10(start_power + i*delta)) * N / 2 ) << std::endl;
+        int toPush = static_cast<int>( (fromK + exp10(start_power + i*delta)) * N / 2 );
+        if (toPush != lastPush){
+            linksToMeasure.push_back( toPush );
+            lastPush = toPush;
+        }
+    }
+    
+}
 
 void ColorNet::profileOn(bool state)
 {
@@ -321,6 +346,7 @@ if (logspace)
 else
     gcHistory.resize(total_links / link_res + 1);
 unsigned history_ind=0;
+int next_link=linksToMeasure[history_ind];
 while(link_count < to_link ){
 
     auto start = clock.now();
@@ -345,14 +371,11 @@ while(link_count < to_link ){
         profileMap["incrementalComponents"]+=time;
     }
     if(logspace){
-        if ((link_count - from_link) > nextPower){
-            currentPower = nextPower;
-            nextPower = currentPower*10;
-        }
-        if (link_count > from_link && (link_count - from_link)%currentPower == 0){
+        if (link_count == next_link){
             gcHistory.push_back(getMutualGCFromDSets());
-            kHistory.push_back(link_count*2.0/N);
+            kHistory.push_back(link_count*2.0L/N);
             history_ind++;
+            next_link = linksToMeasure[history_ind];
         }
     }else{
         if (link_count > from_link && link_count%link_res == 0){
