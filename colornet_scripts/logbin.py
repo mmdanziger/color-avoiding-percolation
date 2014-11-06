@@ -82,6 +82,25 @@ class LogBin(object):
         xyerr = [np.std(i, axis=0) for i in self.binned_data if i]
         self.xavg, self.yavg = list(zip(*xyavg))
         self.xerr, self.yerr = list(zip(*xyerr))
+        self.calc_clipped_errors()
+
+    def calc_clipped_errors(self):
+        '''
+        if mean-err<0 it screws up loglog plots
+        :return:
+        '''
+        self.yerr_clip=[]
+        self.xerr_clip=[]
+        for x,xerr in zip(self.xavg,self.xerr):
+            if x - xerr >0:
+                self.xerr_clip.append(xerr)
+            else:
+                self.xerr_clip.append(x)
+        for y,yerr in zip(self.yavg,self.yerr):
+            if y - yerr >0:
+                self.yerr_clip.append(yerr)
+            else:
+                self.yerr_clip.append(y)
 
     def run(self):
         self.set_bins()

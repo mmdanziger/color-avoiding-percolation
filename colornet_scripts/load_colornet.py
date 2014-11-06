@@ -20,11 +20,15 @@ def load_glob(glob_arg):
     return [get_data_from_file(fname) for fname in glob(glob_arg)]
 
 
-def scatter_plot_S_color(data, offset=None, connect_dots=False):
+def scatter_plot_S_color(data, offset=None, connect_dots=False, color=None):
     if offset is None:
         offset = data["kc"]
     ls = ".-" if connect_dots else "."
-    plt.loglog(data["k"] - offset, data["S_color"], ls)
+    if color:
+        plt.loglog(data["k"] - offset, data["S_color"], ls,color=color,alpha=0.4,ms=1)
+    else:
+        plt.loglog(data["k"] - offset, data["S_color"], ls)
+
 
 
 def extract_data_points(data_list, offset=None):
@@ -35,16 +39,19 @@ def extract_data_points(data_list, offset=None):
         points.extend(list(zip(d['k'] - offset, d['S_color'])))
     return points
 
-def plot_average_S_color(data_list,offset=None,label_string="",error=None):
+def plot_average_S_color(data_list,offset=None,label_string="",color=None,error=None):
     points = extract_data_points(data_list,offset)
-    lb = logbin.LogBin(points)
+    lb = logbin.LogBin(points,resolution=0.05)
     lb.run()
+
     if error == "both":
-        plt.errorbar(lb.xavg,lb.yavg,xerr=lb.xerr,yerr=lb.yerr,label=label_string)
+        plt.errorbar(lb.xavg,lb.yavg,xerr=lb.xerr_clip,yerr=lb.yerr_clip,color=color,label=label_string)
     elif error == "y":
-        plt.errorbar(lb.xavg,lb.yavg,yerr=lb.yerr,label=label_string)
+        plt.errorbar(lb.xavg,lb.yavg,yerr=lb.yerr_clip,label=label_string,color=color)
     else:
-        plt.loglog(lb.xavg,lb.yavg,'.-',label=label_string)
+        plt.loglog(lb.xavg,lb.yavg,'.-',lw=2,label=label_string,color=color)
+    plt.yscale('log', nonposy='clip')
+    plt.xscale('log', nonposy='clip')
 
 def plot_full_Scolor_curve(fname):
     d = json.load(open(fname))
