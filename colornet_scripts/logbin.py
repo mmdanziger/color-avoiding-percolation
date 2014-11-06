@@ -1,0 +1,89 @@
+from __future__ import division, print_function
+import warnings
+import numpy as np
+
+key_wrap = lambda data: lambda f, idx: f(data, key=lambda x: x[idx])[idx]
+
+
+class LogBin(object):
+    def __init__(self, points, type="log10", resolution=None, autorun=True):
+        """
+
+        :param points: a list of (x,y) points to bin
+        :param type: what scale to use.  currently only log10 is implemented
+        """
+        self.raw_data = sorted(points)
+        self.data = None
+        self.type = type
+        self.warn_me = False
+        self.clean_data()
+        curry_minmax = key_wrap(self.data)
+        self.minx = curry_minmax(min, 0)
+        self.maxx = curry_minmax(max, 0)
+        self.miny = curry_minmax(min, 1)
+        self.maxy = curry_minmax(max, 1)
+        self.bin_edges = None
+        self.binned_data = []
+        self.default_resolution = 0.09
+        self.xavg, self.yavg, self.xerr, self.yerr = [None, None, None, None]
+        self.resolution=resolution if resolution else self.default_resolution
+        if autorun:
+            self.run()
+
+    def clean_data(self):
+        """
+        Remove points for which the x value cannot be plotted (ie x<0)
+        :return:
+        """
+        for idx, point in enumerate(self.raw_data):
+            if point[0] > 0:
+                break
+        self.data = self.raw_data[idx:]
+
+    def set_bins(self, left_edge=None, right_edge=None, nbins=None):
+        """
+        sets the bins.  tries to get bin spacing of 0.1.
+        empty bins are automatically removed from final data so a couple extra is not so bad.
+        :param left_edge: lowest value to begin bins
+        :param right_edge: highest value to end bins
+        :param nbins: number of bins
+        :return:
+        """
+        if left_edge is None:
+            left_edge = self.minx
+        if right_edge is None:
+            right_edge = self.maxx
+        if nbins is None:
+            nbins = (np.log10(right_edge) - np.log10(left_edge)) / self.resolution + 1
+        self.bin_edges = np.linspace(np.log10(left_edge), np.log10(right_edge), num=nbins)
+
+    def bin_data(self):
+        if self.bin_edges is None:
+            raise ValueError("You need to run set_bins before you can bin the data")
+        bin_idx = 0
+        self.binned_data = [[] for i in enumerate(self.bin_edges)]
+        for point in self.data:
+            while np.log10(point[0]) > self.bin_edges[bin_idx + 1]:
+                bin_idx += 1
+            self.binned_data[bin_idx].append(point)
+        assert sum(map(len, self.binned_data)) == len(self.data)
+
+        if self.warn_me:
+            if not all(self.binned_data):
+                for idx, bin in enumerate(self.binned_data[:-1]):
+                    if not bin:
+                        warnings.warn("No data in bin %i [%.4f,%.4f]  Consider using fewer bins."
+                                      % (idx, pow(10, self.bin_edges[idx]), pow(10, self.bin_edges[idx + 1])))
+
+    def average_bins(self):
+        if not self.binned_data:
+            raise ValueError("You need to run bin_data before you can average the bins")
+        xyavg = [np.mean(i, axis=0) for i in self.binned_data if i]
+        xyerr = [np.std(i, axis=0) for i in self.binned_data if i]
+        self.xavg, self.yavg = list(zip(*xyavg))
+        self.xerr, self.yerr = list(zip(*xyerr))
+
+    def run(self):
+        self.set_bins()
+        self.bin_data()
+        self.average_bins()
