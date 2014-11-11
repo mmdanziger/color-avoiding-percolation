@@ -10,7 +10,8 @@ class LogBin(object):
         """
 
         :param points: a list of (x,y) points to bin
-        :param type: what scale to use.  currently only log10 is implemented
+        :param type: what scale to use.  "log10" for  log10 otherwise reverts to linear.
+               other fxns manually fixable via trans, inv attributes
         """
         self.raw_data = sorted(points)
         self.data = None
@@ -25,6 +26,8 @@ class LogBin(object):
         self.bin_edges = None
         self.binned_data = []
         self.default_resolution = 0.09
+        self.trans = np.log10 if type == "log10" else lambda x:x
+        self.inv = lambda x :10**x if type == "log10" else lambda x:x
         self.xavg, self.yavg, self.xerr, self.yerr = [None, None, None, None]
         self.resolution=resolution if resolution else self.default_resolution
         if autorun:
@@ -54,8 +57,8 @@ class LogBin(object):
         if right_edge is None:
             right_edge = self.maxx
         if nbins is None:
-            nbins = (np.log10(right_edge) - np.log10(left_edge)) / self.resolution + 1
-        self.bin_edges = np.linspace(np.log10(left_edge), np.log10(right_edge), num=nbins)
+            nbins = (self.trans(right_edge) - self.trans(left_edge)) / self.resolution + 1
+            self.bin_edges = np.linspace(self.trans(left_edge), self.trans(right_edge), num=nbins)
 
     def bin_data(self):
         if self.bin_edges is None:
@@ -63,7 +66,7 @@ class LogBin(object):
         bin_idx = 0
         self.binned_data = [[] for i in enumerate(self.bin_edges)]
         for point in self.data:
-            while np.log10(point[0]) > self.bin_edges[bin_idx + 1]:
+            while self.trans(point[0]) > self.bin_edges[bin_idx + 1]:
                 bin_idx += 1
             self.binned_data[bin_idx].append(point)
         assert sum(map(len, self.binned_data)) == len(self.data)

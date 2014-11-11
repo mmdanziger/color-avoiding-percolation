@@ -25,9 +25,9 @@ def scatter_plot_S_color(data, offset=None, connect_dots=False, color=None):
         offset = data["kc"]
     ls = ".-" if connect_dots else "."
     if color:
-        plt.loglog(data["k"] - offset, data["S_color"], ls,color=color,alpha=0.4,ms=1)
+        plt.plot(data["k"] - offset, data["S_color"], ls,color=color,alpha=0.4,ms=1)
     else:
-        plt.loglog(data["k"] - offset, data["S_color"], ls)
+        plt.plot(data["k"] - offset, data["S_color"], ls)
 
 
 
@@ -39,19 +39,23 @@ def extract_data_points(data_list, offset=None):
         points.extend(list(zip(d['k'] - offset, d['S_color'])))
     return points
 
-def plot_average_S_color(data_list,offset=None,label_string="",color=None,error=None):
+def plot_average_S_color(data_list,offset=None,label_string="",color=None,error=None,type="log10"):
     points = extract_data_points(data_list,offset)
-    lb = logbin.LogBin(points,resolution=0.05)
+    lb = logbin.LogBin(points,resolution=0.004,type=type)
     lb.run()
 
     if error == "both":
-        plt.errorbar(lb.xavg,lb.yavg,xerr=lb.xerr_clip,yerr=lb.yerr_clip,color=color,label=label_string)
+        plt.errorbar(lb.xavg,lb.yavg,xerr=lb.xerr_clip,yerr=lb.yerr_clip,color=color,label=label_string,fmt='none')
     elif error == "y":
-        plt.errorbar(lb.xavg,lb.yavg,yerr=lb.yerr_clip,label=label_string,color=color)
+        plt.errorbar(lb.xavg,lb.yavg,yerr=lb.yerr_clip,label=label_string,color=color,fmt='none')
     else:
-        plt.loglog(lb.xavg,lb.yavg,'.-',lw=2,label=label_string,color=color)
-    plt.yscale('log', nonposy='clip')
-    plt.xscale('log', nonposy='clip')
+        if type == "log10":
+            plt.loglog(lb.xavg,lb.yavg,'.-',lw=2,label=label_string,color=color)
+        else:
+            plt.plot(lb.xavg,lb.yavg,'.-',lw=2,label=label_string,color=color)
+    if type == "log10":
+        plt.yscale('log', nonposy='clip')
+        plt.xscale('log', nonposy='clip')
 
 def plot_full_Scolor_curve(fname):
     d = json.load(open(fname))

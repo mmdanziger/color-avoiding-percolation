@@ -33,7 +33,33 @@ def u_c(ks,r_c):
         u0[i]=opt.fixed_point(func,0.5,args=[ks[i],r_c])
     return u0
 
-def get_theory(C=3):
+def S_ER():
+    '''
+    ER network percolation function returns the function, not the value
+    :param k: average degree
+    :return: percolation profile function
+    '''
+
+    def f(k):
+        return opt.fsolve(lambda x: x - (1 - np.exp(-k * x)), 0.5, full_output=False)
+
+    return f
+
+def S_infER():
+
+    '''
+
+    :param k:
+    :return:
+    '''
+
+    def f(k):
+        u = opt.fsolve(lambda x : x - np.exp(-k*(1 - x)), 0.5, full_output=False)
+        return 1 - np.exp(k*(u-1))*(k*(1-u) + 1 )
+
+    return f
+
+def get_theory(C=3,type="log10"):
     ### Specify parameters:
     ### nr of colors, homogeneous color frequency r_c
     #C=10
@@ -42,7 +68,7 @@ def get_theory(C=3):
     k_crit=1.*C/(C-1)
     ### array of values of expected degrees
     #ks=linspace(k_crit,.,1000)
-    ks=logspace( -5, 0,1000) + k_crit
+    ks=logspace( -5, 0,1000) + k_crit if type == "log10" else linspace(0,6,1000)
 
 
     ### calculate arrays of link failure probabilities
@@ -65,11 +91,5 @@ def get_theory(C=3):
 
     ### plot and show
     #loglog(ks-k_crit,S_color,'.-', label="C=%i"%C)
-    return ks-k_crit,S_color
-
-xlabel(r'$\bar k $')
-ylabel(r'$S_{\rm color}$')
-legend()
-show()
-
+    return [ks-k_crit,S_color] if type=="log10" else [ks,S_color]
 
