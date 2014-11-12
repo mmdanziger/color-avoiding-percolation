@@ -41,13 +41,13 @@ def extract_data_points(data_list, offset=None):
 
 def plot_average_S_color(data_list,offset=None,label_string="",color=None,error=None,type="log10"):
     points = extract_data_points(data_list,offset)
-    lb = logbin.LogBin(points,resolution=0.004,type=type)
+    lb = logbin.LogBin(points,resolution=0.05,type=type)
     lb.run()
 
     if error == "both":
-        plt.errorbar(lb.xavg,lb.yavg,xerr=lb.xerr_clip,yerr=lb.yerr_clip,color=color,label=label_string,fmt='none')
+        plt.errorbar(lb.xavg,lb.yavg,xerr=lb.xerr_clip,yerr=lb.yerr_clip,ecolor=color,label=label_string,fmt='none')
     elif error == "y":
-        plt.errorbar(lb.xavg,lb.yavg,yerr=lb.yerr_clip,label=label_string,color=color,fmt='none')
+        plt.errorbar(lb.xavg,lb.yavg,yerr=lb.yerr_clip,label=label_string,ecolor=color,fmt='none',errorevery=20,capsize=5,capthick=2)
     else:
         if type == "log10":
             plt.loglog(lb.xavg,lb.yavg,'.-',lw=2,label=label_string,color=color)

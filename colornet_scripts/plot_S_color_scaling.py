@@ -14,6 +14,8 @@ if not ipy:
         matplotlib.rcParams.update({"usetex": "true"})
     except KeyError:
         matplotlib.rcParams.update({"text.usetex": "true"})
+    matplotlib.rcParams.update({"font.size":24})
+    matplotlib.rcParams.update({"legend.fontsize":20})
     from matplotlib import font_manager
     font_manager.USE_FONTCONFIG = True
 
@@ -59,10 +61,13 @@ if __name__ == "__main__":
             lc.plot_average_S_color(data,None,label,color,error=None)
             for dset in data:
                 lc.scatter_plot_S_color(dset,color=color)
+    print(list(data_count.items()))
     plt.xlabel(r"$k - k_c$")
     plt.ylabel(r"$S_{color}$")
     plt.legend(loc=4)
     plt.axis([1e-4,1e-1,1e-11,1e-2])
+    plt.grid()
     plt.show() if ipy else plt.savefig("/tmp/S_scaling_%s.pdf"%nc)
+    plt.show() if ipy else plt.savefig("/tmp/S_scaling_%s.png"%nc)
     if not ipy:
         plt.close()
