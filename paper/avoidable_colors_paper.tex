@@ -24,13 +24,15 @@
 \author{Vinko Zlati\'{c}}
 \affiliation{Theoretical Physics Division, Rudjer Bo\v{s}kovi\'{c} Institute, Zagreb, Croatia}
 \begin{abstract}
-It is often necessary to transmit a message across a network when parts of the network are not secure.
-Here, we consider the case of a network partitioned into sets of nodes with the assumption that no single subset can be trusted.
-As such, the message needs to be divided and transmitted on multiple paths so that no subset sees the entire message.
-This problem arises, for instance, in a peer-to-peer (p2p) network running different unpatched software versions 
-and when considering AS-level listeners in the entry and exit to the Tor network.
+It is often necessary to transmit a message through a network when parts of the network are not secure.
+Here, we consider the case of a network partitioned into sets of nodes (colored with exactly one color) with the assumption that no single subset (color) can be trusted.
+One approach to obtain security is to divide the message and transmit the different parts on multiple paths so that no subset sees the entire message.
+This problem arises, for instance, in a peer-to-peer (p2p) network running different software versions.
+The same concern arises when considering the threat to anonymity posed by AS-level listeners in the entry and exit paths to the Tor network.
 
-We present a general analysis of this problem on random graphs including analytic solutions for \er and scale-free networks and numerical simulations confirming our calculations and further numerical tests on real-world networks including the internet, partitioned by AS.
+We present a general analysis of this problem based on a new kind of percolation theory and provide a framework to determine under what circumstances such an approach is feasible.
+In addition to analytic solutions for random networks and explicit verification for \er and scale-free networks, 
+we discuss a new kind of critical phenomena in which the critical exponent is determined by the number of subsets (colors) in the system.
 
 Surprisingly, we find that increased software heterogeneity may actually improve security.
 \end{abstract}
@@ -40,19 +42,34 @@ Surprisingly, we find that increased software heterogeneity may actually improve
 
 \section{Introduction}
 
-Secure and anonymous communication over networks, in particular the internet, has become a central question facing the global community.
-In light of widespread state-surveillance, large-scale cybercrime and superbugs like ``Heartbleed,'' one can no longer assume that an entire communications network is secure.
+Secure and anonymous communication over networks, in particular the internet, is a central question facing the global community.
+In light of widespread state-surveillance, cybercrime and severe bugs like ``Heartbleed,'' one can no longer assume that an entire communications network is secure.
 
 However, the network insecurity may be disjoint.  
 For instance, on a p2p network, there may be different versions of the software running at the same time.  
 In such a case, though there may be unpatched or even undiscovered bugs affecting a given version, it is unlikely that all of the versions will be compromised by the same group at the same time.
 In such a case, a sensible strategy for secure communication may be to divide the message and transmit it along different paths so that \textit{no single version} receives the entire message.
-With this heuristic, secure communication can be achieved even if large parts of the network are insecure.
+With this heuristic, secure communication may be achievable even if large parts of the network are insecure.
+
+To analyze this problem, we consider a network for which each node is assigned exactly one color.
+We assume that one of the colors is insecure but \textit{a priori} we do not know  which one.
+The colors may stand for software versions on servers, where all servers of the 
+same version are likely to fail at the same time; 
+they may stand for ownership/control, where the controlling body (company, government etc.) may be assumed to eavesdrop on their nodes;
+they may stand for economic entities with correlated failure probability (due to financial dependence, reliance on the same resource); 
+or they may stand for reloading points of transportation (e.g. ports with transferring goods from ship to train, where strikes could hit many ports at the same time). 
+
+The recent ``Occupy Central'' protests are a case in point.
+It was reported that mobile internet access was disrupted in an attempt to hamper the protesters' ability to organize.
+In response, many began to use a mobile application called ``Firechat'' which used Bluetooth to transmit messages to any other users within a few meters.
+Each user also automatically retransmits messages and in this way, given a sufficient density of users, local communicability can be recovered even in the absence of internet or phone service.
+However, it was also reported that government sponsored malware began to be spread via this network.
+Assuming not all operating systems or device manufacturers are equally susceptible, a new routing problem arises: can the messages be split so that no specific vulnerable class sees the whole message?
 
 This problem also arises when attempting to safeguard anonymity with the Tor network \cite{dingledine-proceedings2004}.  
 Recent work has shown that if the same autonomous system (AS) controls a router on the path from the source to the entry node of the Tor network and also a router on the path from the exit node to the destination, the identity of source and destination can be deduced from a statistical analysis of the traffic pattern and the anonymity of the Tor network is broken \cite{murdoch-proceedings2007}.
 Since a relatively small number of AS's control the entire internet, this scenario is a serious concern \cite{edman-proceedings2009}.
-Indeed, we find that heterogeneity of management and versioning may provide higher levels of security.
+Indeed, we find that heterogeneity of management and versioning may provide higher levels of security if path heterogeneity is adopted.
 
 
 \paragraph{Background}
@@ -61,35 +78,30 @@ Indeed, we find that heterogeneity of management and versioning may provide high
 In the 1990s, using sets of paths with disjunct servers \cite{dolev-acm1993}.
 This early study, which gained broad attention in computer science [...],
 abstracted from the network structure and assumed the existence of the paths a priori. 
-
 The possibility of secure communication was studied as
 well for wireless networks using percolation on spatially embedded
 graphs \cite{pinto-ieee2012}. 
 
 
-Here we examine this problem on general network topologies several partitioning rules.  
-We do not consider here the implementation details of such a communication strategy but rather show under what circumstances it would be possible in principle.
+Here we examine the effect of network topology and number of subsets (colors) on the feasibility of secure communication on a network containing insecure sets of nodes.  
+%We do not consider here the implementation details of such a communication strategy but rather show under what circumstances it would be possible in principle.
 We begin with a formal definition of the problem and its relationship to percolation theory and then proceed to demonstrate a number of key properties on random graphs and sample measurements on real-world networks, including the AS-level internet.
 
-To analyze this problem, we consider a network for which each node is assigned exactly one color.
-We assume that one of the colors is insecure but \textit{a priori} we do not know  which one.
-Therefore, a pair of nodes is securely connectable iff there exist a set of paths connecting the nodes such that no color appears on all of the paths.  
-This property suggests an analytic approach similar to percolation theory on networks.
-If node or link failures occur with a given probability, 
+On a non-colored network, if node or link failures occur with a given probability, 
 percolation theory on complex networks can be used to determine overall connectivity \cite{cohen-book2010,newman-book2010}. 
-{\color{red} Do we use $k$-core percolation? If not, why do we need to discuss it?}
-In particular, $k$-core percolation \cite{dorogovtsev-prl2006} has interesting implications due to the special k-core structure of the AS server network of the
-Internet \cite{tauro-ieee2001,carmi-pnas2007}. 
+Here we develop a new framework based on percolation theory but not reducable to any previous percolation problems on complex networks.
 
 
+%{\color{red} Do we use $k$-core percolation? If not, why do we need to discuss it?}
+%In particular, $k$-core percolation \cite{dorogovtsev-prl2006} has interesting implications due to the special k-core structure of the AS server network of the
+%Internet \cite{tauro-ieee2001,carmi-pnas2007}. 
 %However, recent security problems where often due to gaps in
 %the software, and therefore whole sets of servers will likely fault at
 %the same time, if they use the same software version of the OS, transmission
 %software etc.
+%To calculate the probability of successful secure communication, we develop a new kind of percolation theory in which topological connectivity alone is not a sufficient condition.
+%Rather, a pair of nodes is connectable if there exists a set of paths between them, each of which avoids one of the colors in the system.
 
-To calculate the probability of secure communication, we develop a new kind of percolation theory in which topological connectivity alone is not a sufficient condition.
-Rather, a pair of nodes is connectable if there exists a set of paths between them, each of which avoids one of the colors in the system.
-There may be a smaller set of paths which securely connects the pair of nodes but such a case is trivially included in the condition of connectability via a maximal number of paths.
 
 %
 %this property we begin by examining color-avoiding connected components.
@@ -119,32 +131,31 @@ There may be a smaller set of paths which securely connects the pair of nodes bu
 \end{center}
 \end{figure}
 %
-Assume a graph $G$ with $N$ vertices and adjacency matrix $A_{ij}$. Every vertex 
-$i$ has a color $c_i\in\{1,2,\dots,C\}$, where $C$ denotes the total number of colors. 
-The colors may stand for software versions on servers, where all servers of the 
-same version are likely to fail at the same time; 
-they may stand for ownership/control, where the controlling body (company, government etc.) may be assumed to eavesdrop on their nodes;
-they may stand for economic entities with correlated failure probability (due to financial dependence, reliance on the same resource); 
-or they may stand for reloading points of transportation (e.g. ports with transferring goods from ship to train, where strikes could hit many ports at the same time). 
+Assume a graph $G$ with $N$ vertices and adjacency matrix $A_{ij}$. 
+Every vertex $i$ has a color $c_i\in\{1,2,\dots,C\}$, where $C$ denotes the total number of colors. 
 Faced with the possible collective failure or insecurity of all nodes of a single color, 
-``connectivity'' means that two nodes are required to be ``connected with avoidable colors'': 
+``connectivity'' means that two nodes are required to be connected while avoiding potentially vulnerable colors: 
 For every color $c$, a connecting path must exist, such that \textit{all} nodes 
-on the path are \textit{not} of color $c$. This is illustrated on the left of 
-figure~\ref{fig:avoidable_colors}. 
-In the following, we refer to this property as ``color-connected.''
+on the path are \textit{not} of color $c$.
+Since we must assume that the source and target themselves are secure, their colors are not included in the calculation of color-connectability.
+This is illustrated on the left of figure~\ref{fig:avoidable_colors}. 
+In the following, we refer to this property as ``color-connectability.''
+We present a theory for the calculation of the probability of existence of a set of $C$ paths, one avoiding each color, between pairs of nodes.
+There may be a smaller set of paths which securely connects the pair of nodes but such a case is trivially included in the condition of color-connectability via a maximal number of paths.
 
 In order to discuss the connectivity of the network in general, 
-we define an ``avoidable colors component'' as a maximal set of nodes, 
-where every node pair is connected with avoidable colors. 
+we define a ``color avoiding component'' as a maximal set of nodes, 
+where every node pair is color-connected. 
 Such a component is highlighted with red in Fig. \ref{fig:avoidable_colors}. 
+Note that there are nodes which are not themselves part of the color avoiding component 
+but they are necessary for the color-connected nodes to securely communicate.
+This occurs when all of the neighbors which lead from a node to the color avoiding component are of the same color.
+In such a case, the node itself is not color-connectable with the system as a whole because it must pass through nodes of a certain color before it can reach elsewhere.  
+However, in general, this node will still be necessary to form paths which avoid other colors.
+The fact that non-color-connectible nodes may be needed to create overall system color-connectivity indicates that a new kind of percolation theory is needed here.
 
-{\red 
-Note that there are nodes needed for providing 
-connections which themselves do not belong to the avoidable colors component. 
-\textit{This is a very interesting property. We should discuss it more thoroughly.}}
-
-By studying the avoidable colors component, we obtain a clear quantitative measure of the feasibility of security through multiple-path routing and information on where those paths should be routed.
-Furthermore, this gives us a way to measure the effect of changes in network topology, link density, number of colors and the color distribution.
+By studying the color avoiding component, we obtain a clear quantitative measure of the feasibility of security through multiple-path routing and information on where those paths should be routed.
+Furthermore, this gives us a way to measure the effect of changes in network topology, link density and number of colors.
 
 %Labeling avoidable colors components can be useful for different tasks: 1) The 
 %fraction of nodes being in the largest avoidable colors component tells us whether 
@@ -182,10 +193,11 @@ of the cases.
 %
 As illustrated in figure~\ref{fig:avoidable_colors_candidate}, 
 there is a way to find a candidate set of nodes $\mathcal{L}_{\rm color}$ 
-for the largest avoidable colors component.
+for the largest color avoiding component.
 First, for every color $c$, we delete all nodes with color $c$ 
 and find the largest component in the remaining graph, $\mathcal{L}_{\bar c}$. 
-Next, we define $\mathcal{L}_{\rm color}$ as the set of nodes such which are in $\mathcal{L}_{\bar c}$ or have at least one link to it; for every color $c$. 
+Next, we define $\mathcal{L}_{\rm color}$ as the set of nodes such which are in $\mathcal{L}_{\bar c}$ or have at least one link to it; for every color $c$.
+If we were to adopt a mutual giant component similar to percolation on interdependent\cite{buldyrev-nature2010} or multiplex networks \cite{baxter-prl2012}, we would always have an empty set because every node has some color $c$ and will thus not be a member of $\mathcal{L}_{\bar c}$. 
 Now every node pair in $\mathcal{L}_{\rm color}$ are color-connected. 
 {\red \textit{I don't understand why this makes it maximal...}
 If for every color $c$, $\mathcal{L}_{\rm color}$ includes at least one node out of $\mathcal{L}_{\bar c}$, 
