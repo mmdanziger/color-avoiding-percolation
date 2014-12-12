@@ -41,7 +41,7 @@ def extract_data_points(data_list, offset=None):
 
 def plot_average_S_color(data_list,offset=None,label_string="",color=None,error=None,type="log10"):
     points = extract_data_points(data_list,offset)
-    lb = logbin.LogBin(points,resolution=0.05,type=type)
+    lb = logbin.LogBin(points,resolution=0.08,type=type)
     lb.run()
 
     if error == "both":
