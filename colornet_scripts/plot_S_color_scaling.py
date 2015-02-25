@@ -62,7 +62,7 @@ if __name__ == "__main__":
             for dset in data:
                 lc.scatter_plot_S_color(dset,color=color)
     print(list(data_count.items()))
-    plt.xlabel(r"$k - k_c$")
+    plt.xlabel(r"$\bar{k} - \bar{k}_{\rm crit}$")
     plt.ylabel(r"$S_{color}$")
     plt.legend(loc=4)
     plt.axis([1e-4,1e-1,1e-11,1e-2])
