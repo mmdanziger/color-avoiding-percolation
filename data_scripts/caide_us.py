@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from __future__ import division
 import matplotlib
 matplotlib.use("agg")
@@ -7,7 +8,13 @@ import matplotlib.pyplot as plt
 from collections import OrderedDict,defaultdict
 import os
 script_path = os.path.dirname(os.path.realpath(__file__))
+from sys import argv
 
+if len(argv) >4:
+    ll_lat=float(argv[1])
+    ll_lon=float(argv[2])
+    ur_lat=float(argv[3])
+    ur_lon=float(argv[4])
 #vertex_info
 vertexfile = os.path.join(script_path,"../real_data/caide-latest-complete-direct-vertex-properties.txt")
 edgefile = os.path.join(script_path,"../real_data/caide-latest-complete-direct-edge-list.txt")
@@ -22,6 +29,12 @@ lcolor=[]
 lat=OrderedDict()
 lon=OrderedDict()
 G = nx.Graph()
+plot_all = False
+# m2 = Basemap(width=40e6,height=40e6,projection='aea',
+#                resolution=None,lat_0=(ll_lat+ur_lat)/2, lon_0=(ll_lon + ur_lon)/2,suppress_ticks=True)
+pos={}
+m = Basemap(llcrnrlat=ll_lat, llcrnrlon=ll_lon,urcrnrlat=ur_lat,urcrnrlon=ur_lon,projection='aea',
+               area_thresh=500,resolution='f',lat_0=(ll_lat+ur_lat)/2, lon_0=(ll_lon + ur_lon)/2,suppress_ticks=True)
 
 with open(vertexfile) as f:
     for line in f:
@@ -32,14 +45,18 @@ with open(vertexfile) as f:
         thisid = int(thisid)
         thislat=float(thislat)
         thislon=float(thislon)
+        pos[thisid] = m(thislon,thislat)
+        countrylat[thiscid]+=thislat
+        countrylon[thiscid]+=thislon
+        country[thisid] = thiscid
+        if thislat != 0 and thislon!=0:
+            countrycount[thiscid]+=1
+        if not plot_all:
+            if not (ll_lat<=thislat<=ur_lat and ll_lon<=thislon<=ur_lon):
+                continue
         if thislcolor == "1":
             lcolor.append(thisid)
         kcore[thisid]=int(thiskcore)
-        country[thisid] = thiscid
-        countrylat[thiscid]+=thislat
-        countrylon[thiscid]+=thislon
-        if thislat != 0 and thislon!=0:
-            countrycount[thiscid]+=1
         lat[thisid] = thislat
         lon[thisid] = thislon
 for cid in countrylat:
@@ -49,46 +66,43 @@ for cid in countrylat:
     except ZeroDivisionError:
         print("No nonzero for cid %s"%cid)
 
-
+#ll_lat,ll_lon,ur_lat,ur_lon=[36.5, -89.5, 48.8, -66.5]
+#ll_lat,ll_lon,ur_lat,ur_lon=[40.66, -74.18, 41.17, -73.16]
 # put map projection coordinates in pos dictionary
-m = Basemap(
-        projection='robin',
-        lon_0=0,
-        resolution='h',
-        suppress_ticks=True)
 
-pos={}
-pos = dict((idx, m(lon[idx],lat[idx]) )
-           if lon[idx]!=0 and lat[idx]!=0 else
-           (idx, m(countrylon[country[idx]],countrylat[country[idx]]))
-           for idx in lon.keys() )
-G.add_nodes_from(lat.keys())
+
+for idx in pos:
+    if pos[idx] == m(0,0):
+        pos[idx] = m(countrylon[country[idx]],countrylat[country[idx]])
+
+
+
+
 # draw
 plt.figure(figsize=(15,15),dpi=600)
-nx.draw_networkx_nodes(G,pos,nodelist=lcolor,node_size=20,node_color="green",alpha=0.7,linewidths=0.3)
-nx.draw_networkx_nodes(G,pos,nodelist=[i for i in lat if i not in lcolor],node_shape="^",node_size=20,alpha=0.4)
-
+nx.draw_networkx_nodes(G,pos,nodelist=lcolor,node_size=50,node_color="green",alpha=0.7)
+nx.draw_networkx_nodes(G,pos,nodelist=[i for i in lat if i not in lcolor],node_shape="^",node_size=50,alpha=0.4)
 
 #\(G,pos,node_size=200,node_color='blue')
 if draw_edges:
-    max_edges = 5000
+    max_edges = 25000
     with open(edgefile) as f:
         edge_count=0
         for line in f:
             try:
-                sid,tid = line.strip().split()
-                edge_count+=1
+                sid,tid = map(int,line.strip().split())
             except ValueError:
                 continue
-            G.add_edge(int(sid),int(tid))
+            if sid in lat or tid in lat:
+                G.add_edge(sid,tid)
+                edge_count+=1
             if edge_count > max_edges:
                 break
-    nx.draw_networkx_edges(G,pos,alpha=0.3)
+    nx.draw_networkx_edges(G,pos,alpha=0.2,width=0.5)
 
 
 # Now draw the map
-m.drawcountries(linewidth=0.5).set_alpha(1)
-m.drawcoastlines(linewidth=0.5).set_alpha(1)
-m.shadedrelief(alpha=0.7)
-#m.bluemarble()
-plt.savefig("/tmp/AS_globe.png")
+m.drawcountries(linewidth=1.5,zorder=-5).set_alpha(0.9)
+m.drawcoastlines(linewidth=1.5,zorder=-5).set_alpha(0.9)
+m.shadedrelief(alpha=0.7,zorder=-5)
+plt.savefig("/tmp/AS_Spain.png")
