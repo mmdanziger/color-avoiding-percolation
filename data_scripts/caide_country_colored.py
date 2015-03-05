@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from __future__ import division
+from __future__ import division,print_function
 import matplotlib
 
 matplotlib.use("pdf")
@@ -19,6 +19,9 @@ if len(argv) > 4:
     ll_lon = float(argv[2])
     ur_lat = float(argv[3])
     ur_lon = float(argv[4])
+else:
+    print("Please enter lower left (lat,lon) and upper right (lat,lon) args to create the figure.")
+    exit()
 # vertex_info
 vertexfile = os.path.join(script_path, "../real_data/caide-latest-complete-direct-vertex-properties.txt")
 edgefile = os.path.join(script_path, "../real_data/caide-latest-complete-direct-edge-list.txt")
