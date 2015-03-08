@@ -87,18 +87,25 @@ for idx in pos:
 
 countries = list(set([country[idx] for idx in lon]))
 country_colors = list(colors.cnames.keys())
+normal_colors = ["blue", "green", "red", "cyan", "magenta", "orangered", "orchid", "fuchsia", "purple", "teal", "slateblue","sienna"]
+other_colrs = [i for i in country_colors if i not in normal_colors]
+shuffle(normal_colors)
 shuffle(country_colors)
-
+country_colors =normal_colors#+country_colors
 
 # draw
 plt.figure(figsize=(6, 6), dpi=400)
-
+import matplotlib.patches as mpatches
+legend_handles=[]
 for cidx,cid in enumerate(countries):
     lcolor_tag = [i for i in lcolor if country[i] == cid]
     not_lcolor_tag = [i for i in lon if country[i] == cid and i not in lcolor]
     nx.draw_networkx_nodes(G, pos, nodelist=lcolor_tag, node_size=80, node_color=country_colors[cidx], alpha=0.7)
     nx.draw_networkx_nodes(G, pos, nodelist=not_lcolor_tag, node_shape="^", node_color=country_colors[cidx], node_size=80, alpha=0.4)
     print("%s for %s"%(country_colors[cidx],id2code[cid]))
+    legend_handles.append(mpatches.Patch(color=country_colors[cidx],label=id2code[cid],alpha=0.7))
+
+plt.legend(handles=legend_handles,loc="best",ncol=3,fontsize="x-small")
 
 #\(G,pos,node_size=200,node_color='blue')
 if draw_edges:
