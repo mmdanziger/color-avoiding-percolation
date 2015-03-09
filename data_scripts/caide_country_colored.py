@@ -9,8 +9,10 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib import colors
 from numpy.random import shuffle
+import json
 from collections import OrderedDict, defaultdict
 import os
+from sys import exit
 
 script_path = os.path.dirname(os.path.realpath(__file__))
 from sys import argv
@@ -20,6 +22,18 @@ if len(argv) > 4:
     ll_lon = float(argv[2])
     ur_lat = float(argv[3])
     ur_lon = float(argv[4])
+    c_lat = (ll_lat + ur_lat) / 2
+    c_lon = (ll_lon + ur_lon) / 2
+elif len(argv) == 2:
+    cloc = json.load(open(os.path.join(script_path, "../real_data/country_locations.json")))
+    try:
+        this_country = cloc[argv[1]]
+        ll_lat,ll_lon = this_country["ll"]
+        ur_lat,ur_lon = this_country["ur"]
+        c_lat,c_lon = this_country["c"]
+    except:
+        print("Country not found.")
+        exit()
 else:
     print("Please enter lower left (lat,lon) and upper right (lat,lon) args to create the figure.")
     exit()
@@ -44,8 +58,7 @@ lcolor_shape = False
 #                resolution=None,lat_0=(ll_lat+ur_lat)/2, lon_0=(ll_lon + ur_lon)/2,suppress_ticks=True)
 pos = {}
 m = Basemap(llcrnrlat=ll_lat, llcrnrlon=ll_lon, urcrnrlat=ur_lat, urcrnrlon=ur_lon, projection='aea',
-            area_thresh=500, resolution='f', lat_0=(ll_lat + ur_lat) / 2, lon_0=(ll_lon + ur_lon) / 2,
-            suppress_ticks=True)
+            area_thresh=500, resolution='f', lat_0=c_lat, lon_0=c_lon, suppress_ticks=True)
 
 with open(vertexfile) as f:
     for line in f:
@@ -56,6 +69,9 @@ with open(vertexfile) as f:
         thisid = int(thisid)
         thislat = float(thislat)
         thislon = float(thislon)
+        if not plot_all:
+            if not (ll_lat <= thislat <= ur_lat and ll_lon <= thislon <= ur_lon):
+                continue
         if thislat == 0 and thislon== 0:
             continue
         countrylat[thiscid] += thislat
@@ -64,9 +80,6 @@ with open(vertexfile) as f:
         id2code[thiscid] = thisccode
         if thislat != 0 and thislon != 0:
             countrycount[thiscid] += 1
-        if not plot_all:
-            if not (ll_lat <= thislat <= ur_lat and ll_lon <= thislon <= ur_lon):
-                continue
         pos[thisid] = m(thislon, thislat)
         if thislcolor == "1":
             lcolor.append(thisid)
@@ -89,13 +102,14 @@ for idx in pos:
     if pos[idx] == pos0:
         pos[idx] = m(countrylon[country[idx]], countrylat[country[idx]])
 
-countries = list(set([country[idx] for idx in lon]))
-country_colors = list(colors.cnames.keys())
-normal_colors = ["blue", "green", "red", "cyan", "magenta", "orangered", "orchid", "fuchsia", "purple", "teal", "slateblue","sienna"]
-other_colrs = [i for i in country_colors if i not in normal_colors]
+#countries = list(set([country[idx] for idx in lon]))
+countries  =  [ k for k,v in sorted(countrycount.items(),key=lambda x:x[1],reverse=True) ]
+all_colors = list(colors.cnames.keys())
+normal_colors = ["blue", "green", "red", "cyan", "magenta", "orangered", "orchid",  "purple", "teal", "slateblue","sienna"]
+other_colors = [i for i in all_colors if i not in normal_colors]
 shuffle(normal_colors)
-shuffle(country_colors)
-country_colors =normal_colors#+country_colors
+shuffle(other_colors)
+country_colors =normal_colors + other_colors
 
 # draw
 plt.figure(figsize=(6, 6), dpi=400)
@@ -110,12 +124,12 @@ for cidx,cid in enumerate(countries):
         nx.draw_networkx_nodes(G, pos, nodelist=lcolor_tag, node_size=80, node_color=country_colors[cidx], alpha=0.7)
         nx.draw_networkx_nodes(G, pos, nodelist=not_lcolor_tag, node_shape="^", node_color=country_colors[cidx], node_size=80, alpha=0.4)
     else:
-        nx.draw_networkx_nodes(G, pos, nodelist=list(lon.keys()), node_size=80, node_color=country_colors[cidx], alpha=0.7)
+        nx.draw_networkx_nodes(G, pos, nodelist=[i for i in lon if country[i] == cid], node_size=80, node_color=country_colors[cidx], alpha=1)
 
     print("%s for %s"%(country_colors[cidx],id2code[cid]))
-    legend_handles.append(mlines.Line2D([],[],marker="o",markersize=8,linewidth=0,color=country_colors[cidx],label=id2code[cid],alpha=0.7))
+    legend_handles.append(mlines.Line2D([],[],marker="o",markersize=8,linewidth=0,color=country_colors[cidx],label=id2code[cid],alpha=1))
 
-plt.legend(handles=legend_handles,loc=4,ncol=5,numpoints=1,framealpha=1,bbox_to_anchor=(1,-0.2))
+plt.legend(handles=legend_handles,loc=9,ncol=5,numpoints=1,framealpha=1,bbox_to_anchor=(0.5,0))
 
 #\(G,pos,node_size=200,node_color='blue')
 if draw_edges:
@@ -139,4 +153,8 @@ if draw_edges:
 m.drawcountries(linewidth=1.5, zorder=-5).set_alpha(0.9)
 m.drawcoastlines(linewidth=1.5, zorder=-5).set_alpha(0.9)
 m.shadedrelief(alpha=0.7, zorder=-5)
-plt.savefig("/tmp/AS_Spain.pdf")
+
+top_cid,cnt = list(sorted(countrycount.items(),key=lambda x: x[1],reverse=True))[0]
+top_ccode = id2code[top_cid]
+print("Top country is %s with count %i"%(top_ccode,cnt))
+plt.savefig("/tmp/AS_%s.pdf"%top_ccode)
