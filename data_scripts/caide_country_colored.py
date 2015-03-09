@@ -3,6 +3,7 @@ from __future__ import division,print_function
 import matplotlib
 
 matplotlib.use("pdf")
+matplotlib.rcParams["legend.fontsize"] = 12
 from mpl_toolkits.basemap import Basemap
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -38,6 +39,7 @@ lat = OrderedDict()
 lon = OrderedDict()
 G = nx.Graph()
 plot_all = False
+lcolor_shape = False
 # m2 = Basemap(width=40e6,height=40e6,projection='aea',
 #                resolution=None,lat_0=(ll_lat+ur_lat)/2, lon_0=(ll_lon + ur_lon)/2,suppress_ticks=True)
 pos = {}
@@ -54,7 +56,8 @@ with open(vertexfile) as f:
         thisid = int(thisid)
         thislat = float(thislat)
         thislon = float(thislon)
-        pos[thisid] = m(thislon, thislat)
+        if thislat == 0 and thislon== 0:
+            continue
         countrylat[thiscid] += thislat
         countrylon[thiscid] += thislon
         country[thisid] = thiscid
@@ -64,6 +67,7 @@ with open(vertexfile) as f:
         if not plot_all:
             if not (ll_lat <= thislat <= ur_lat and ll_lon <= thislon <= ur_lon):
                 continue
+        pos[thisid] = m(thislon, thislat)
         if thislcolor == "1":
             lcolor.append(thisid)
         kcore[thisid] = int(thiskcore)
@@ -80,9 +84,9 @@ for cid in countrylat:
 #ll_lat,ll_lon,ur_lat,ur_lon=[40.66, -74.18, 41.17, -73.16]
 # put map projection coordinates in pos dictionary
 
-
+pos0=m(0, 0)
 for idx in pos:
-    if pos[idx] == m(0, 0):
+    if pos[idx] == pos0:
         pos[idx] = m(countrylon[country[idx]], countrylat[country[idx]])
 
 countries = list(set([country[idx] for idx in lon]))
@@ -96,16 +100,22 @@ country_colors =normal_colors#+country_colors
 # draw
 plt.figure(figsize=(6, 6), dpi=400)
 import matplotlib.patches as mpatches
+import matplotlib.lines as mlines
+
 legend_handles=[]
 for cidx,cid in enumerate(countries):
-    lcolor_tag = [i for i in lcolor if country[i] == cid]
-    not_lcolor_tag = [i for i in lon if country[i] == cid and i not in lcolor]
-    nx.draw_networkx_nodes(G, pos, nodelist=lcolor_tag, node_size=80, node_color=country_colors[cidx], alpha=0.7)
-    nx.draw_networkx_nodes(G, pos, nodelist=not_lcolor_tag, node_shape="^", node_color=country_colors[cidx], node_size=80, alpha=0.4)
-    print("%s for %s"%(country_colors[cidx],id2code[cid]))
-    legend_handles.append(mpatches.Patch(color=country_colors[cidx],label=id2code[cid],alpha=0.7))
+    if lcolor_shape:
+        lcolor_tag = [i for i in lcolor if country[i] == cid]
+        not_lcolor_tag = [i for i in lon if country[i] == cid and i not in lcolor]
+        nx.draw_networkx_nodes(G, pos, nodelist=lcolor_tag, node_size=80, node_color=country_colors[cidx], alpha=0.7)
+        nx.draw_networkx_nodes(G, pos, nodelist=not_lcolor_tag, node_shape="^", node_color=country_colors[cidx], node_size=80, alpha=0.4)
+    else:
+        nx.draw_networkx_nodes(G, pos, nodelist=list(lon.keys()), node_size=80, node_color=country_colors[cidx], alpha=0.7)
 
-plt.legend(handles=legend_handles,loc="best",ncol=3,fontsize="x-small")
+    print("%s for %s"%(country_colors[cidx],id2code[cid]))
+    legend_handles.append(mlines.Line2D([],[],marker="o",markersize=8,linewidth=0,color=country_colors[cidx],label=id2code[cid],alpha=0.7))
+
+plt.legend(handles=legend_handles,loc=4,ncol=5,numpoints=1,framealpha=1,bbox_to_anchor=(1,-0.2))
 
 #\(G,pos,node_size=200,node_color='blue')
 if draw_edges:
