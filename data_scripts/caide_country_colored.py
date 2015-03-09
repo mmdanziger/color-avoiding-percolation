@@ -154,7 +154,7 @@ m.drawcountries(linewidth=1.5, zorder=-5).set_alpha(0.9)
 m.drawcoastlines(linewidth=1.5, zorder=-5).set_alpha(0.9)
 m.shadedrelief(alpha=0.7, zorder=-5)
 
-top_cid,cnt = list(sorted(countrycount.items(),key=lambda x: x[1],reverse=True))[0]
-top_ccode = id2code[top_cid]
-print("Top country is %s with count %i"%(top_ccode,cnt))
-plt.savefig("/tmp/AS_%s.pdf"%top_ccode)
+top_ccode = id2code[list(sorted(countrycount.items(),key=lambda x: x[1],reverse=True))[0][0]]
+#print("Top country is %s with count %i"%(top_ccode,cnt))
+cname = argv[2] if len(argv)==2 else top_ccode
+plt.savefig("/tmp/AS_%s.pdf"%cname)

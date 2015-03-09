@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 from numpy.random import shuffle
 from collections import OrderedDict, defaultdict
-import os
+import os,json
 
 script_path = os.path.dirname(os.path.realpath(__file__))
 from sys import argv
@@ -19,6 +19,16 @@ if len(argv) > 4:
     ll_lon = float(argv[2])
     ur_lat = float(argv[3])
     ur_lon = float(argv[4])
+elif len(argv) == 2:
+    cloc = json.load(open(os.path.join(script_path, "../real_data/country_locations.json")))
+    try:
+        this_country = cloc[argv[1]]
+        ll_lat,ll_lon = this_country["ll"]
+        ur_lat,ur_lon = this_country["ur"]
+        c_lat,c_lon = this_country["c"]
+    except:
+        print("Country not found.")
+        exit()
 else:
     print("Please enter lower left (lat,lon) and upper right (lat,lon) args to create the figure.")
     exit()
@@ -54,16 +64,18 @@ with open(vertexfile) as f:
         thisid = int(thisid)
         thislat = float(thislat)
         thislon = float(thislon)
-        pos[thisid] = m(thislon, thislat)
+        if not plot_all:
+            if not (ll_lat <= thislat <= ur_lat and ll_lon <= thislon <= ur_lon):
+                continue
+        if thislat == 0 and thislon== 0:
+            continue
         countrylat[thiscid] += thislat
         countrylon[thiscid] += thislon
         country[thisid] = thiscid
         id2code[thiscid] = thisccode
         if thislat != 0 and thislon != 0:
             countrycount[thiscid] += 1
-        if not plot_all:
-            if not (ll_lat <= thislat <= ur_lat and ll_lon <= thislon <= ur_lon):
-                continue
+        pos[thisid] = m(thislon, thislat)
         if thislcolor == "1":
             lcolor.append(thisid)
         kcore[thisid] = int(thiskcore)
@@ -121,4 +133,7 @@ if draw_edges:
 m.drawcountries(linewidth=1.5, zorder=-5).set_alpha(0.9)
 m.drawcoastlines(linewidth=1.5, zorder=-5).set_alpha(0.9)
 m.shadedrelief(alpha=0.7, zorder=-5)
-plt.savefig("/tmp/AS_Lcolor_Spain.pdf")
+top_ccode = id2code[list(sorted(countrycount.items(),key=lambda x: x[1],reverse=True))[0][0]]
+cname = argv[2] if len(argv)==2 else top_ccode
+
+plt.savefig("/tmp/AS_Lcolor_%s.pdf"%cname)
