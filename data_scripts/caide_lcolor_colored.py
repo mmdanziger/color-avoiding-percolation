@@ -105,10 +105,14 @@ shuffle(country_colors)
 # draw
 plt.figure(figsize=(6, 6), dpi=400)
 
-
+import matplotlib.lines as mlines
 not_lcolor = [i for i in lon if i not in lcolor]
 nx.draw_networkx_nodes(G, pos, nodelist=lcolor, node_size=80, node_color="green", alpha=0.7)
 nx.draw_networkx_nodes(G, pos, nodelist=not_lcolor, node_shape="^", node_color="red", node_size=80, alpha=0.4)
+legend_handles = [mlines.Line2D([],[],marker="o",markersize=8,linewidth=0,color="green",label="connectable",alpha=1),
+                  mlines.Line2D([],[],marker="^",markersize=8,linewidth=0,color="red",label="not connectable",alpha=1),]
+
+plt.legend(handles=legend_handles,loc=9,ncol=5,numpoints=1,framealpha=1,bbox_to_anchor=(0.5,0))
 
 
 #\(G,pos,node_size=200,node_color='blue')
@@ -134,6 +138,6 @@ m.drawcountries(linewidth=1.5, zorder=-5).set_alpha(0.9)
 m.drawcoastlines(linewidth=1.5, zorder=-5).set_alpha(0.9)
 m.shadedrelief(alpha=0.7, zorder=-5)
 top_ccode = id2code[list(sorted(countrycount.items(),key=lambda x: x[1],reverse=True))[0][0]]
-cname = argv[2] if len(argv)==2 else top_ccode
+cname = argv[1] if len(argv)==2 else top_ccode
 
 plt.savefig("/tmp/AS_Lcolor_%s.pdf"%cname)

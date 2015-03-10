@@ -156,5 +156,5 @@ m.shadedrelief(alpha=0.7, zorder=-5)
 
 top_ccode = id2code[list(sorted(countrycount.items(),key=lambda x: x[1],reverse=True))[0][0]]
 #print("Top country is %s with count %i"%(top_ccode,cnt))
-cname = argv[2] if len(argv)==2 else top_ccode
+cname = argv[1] if len(argv)==2 else top_ccode
 plt.savefig("/tmp/AS_%s.pdf"%cname)
