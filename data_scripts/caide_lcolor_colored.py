@@ -3,6 +3,7 @@ from __future__ import division,print_function
 import matplotlib
 
 matplotlib.use("pdf")
+
 from mpl_toolkits.basemap import Basemap
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -10,6 +11,7 @@ from matplotlib import colors
 from numpy.random import shuffle
 from collections import OrderedDict, defaultdict
 import os,json
+from sys import exit
 
 script_path = os.path.dirname(os.path.realpath(__file__))
 from sys import argv
@@ -19,10 +21,12 @@ if len(argv) > 4:
     ll_lon = float(argv[2])
     ur_lat = float(argv[3])
     ur_lon = float(argv[4])
+    c_lat = (ll_lat + ur_lat) / 2
+    c_lon = (ll_lon + ur_lon) / 2
 elif len(argv) == 2:
-    cloc = json.load(open(os.path.join(script_path, "../real_data/country_locations.json")))
+    country_bbox = json.load(open(os.path.join(script_path, "../real_data/country_locations.json")))
     try:
-        this_country = cloc[argv[1]]
+        this_country = country_bbox[argv[1]]
         ll_lat,ll_lon = this_country["ll"]
         ur_lat,ur_lon = this_country["ur"]
         c_lat,c_lon = this_country["c"]
@@ -35,6 +39,7 @@ else:
 # vertex_info
 vertexfile = os.path.join(script_path, "../real_data/caide-latest-complete-direct-vertex-properties.txt")
 edgefile = os.path.join(script_path, "../real_data/caide-latest-complete-direct-edge-list.txt")
+
 draw_edges = False
 # position in decimal lat/lon
 country = {}
@@ -48,12 +53,12 @@ lat = OrderedDict()
 lon = OrderedDict()
 G = nx.Graph()
 plot_all = False
+
 # m2 = Basemap(width=40e6,height=40e6,projection='aea',
 #                resolution=None,lat_0=(ll_lat+ur_lat)/2, lon_0=(ll_lon + ur_lon)/2,suppress_ticks=True)
 pos = {}
 m = Basemap(llcrnrlat=ll_lat, llcrnrlon=ll_lon, urcrnrlat=ur_lat, urcrnrlon=ur_lon, projection='aea',
-            area_thresh=500, resolution='f', lat_0=(ll_lat + ur_lat) / 2, lon_0=(ll_lon + ur_lon) / 2,
-            suppress_ticks=True)
+            area_thresh=500, resolution='f', lat_0=c_lat, lon_0=c_lon, suppress_ticks=True)
 
 with open(vertexfile) as f:
     for line in f:
@@ -112,7 +117,9 @@ nx.draw_networkx_nodes(G, pos, nodelist=not_lcolor, node_shape="^", node_color="
 legend_handles = [mlines.Line2D([],[],marker="o",markersize=8,linewidth=0,color="green",label="connectable",alpha=1),
                   mlines.Line2D([],[],marker="^",markersize=8,linewidth=0,color="red",label="not connectable",alpha=1),]
 
-plt.legend(handles=legend_handles,loc=9,ncol=5,numpoints=1,framealpha=1,bbox_to_anchor=(0.5,0))
+plt.legend(handles=legend_handles,loc=9,ncol=2,numpoints=1,framealpha=1,
+           bbox_to_anchor=(0.5,0),
+           columnspacing=0.5,fontsize=17)
 
 
 #\(G,pos,node_size=200,node_color='blue')
@@ -139,5 +146,4 @@ m.drawcoastlines(linewidth=1.5, zorder=-5).set_alpha(0.9)
 m.shadedrelief(alpha=0.7, zorder=-5)
 top_ccode = id2code[list(sorted(countrycount.items(),key=lambda x: x[1],reverse=True))[0][0]]
 cname = argv[1] if len(argv)==2 else top_ccode
-
 plt.savefig("/tmp/AS_Lcolor_%s.pdf"%cname)
