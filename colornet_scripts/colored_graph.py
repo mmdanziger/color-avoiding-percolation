@@ -90,7 +90,7 @@ class ColoredGraph(object):
         self.color_pair_dict[tcolor][scolor] = len(self.color_set[tcolor].intersection(connectible_nodes)) / len(self.color_set[tcolor])
     def calculate_color_adjacency(self):
         self.calculate_color_sets()
-        colors_list = sorted(self.all_colors,key=lambda x: len(self.color_set[x]),reversed=True)
+        colors_list = sorted(self.all_colors,key=lambda x: len(self.color_set[x]),reverse=True)
         for i_1,scolor in enumerate(colors_list):
             print("%i %s"%(i_1,scolor))
             for tcolor in colors_list[i_1:]:
