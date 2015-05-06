@@ -46,7 +46,7 @@ class ColoredGraph(object):
     def calculate_lcbar(self,to_avoid):
         all_seen=defaultdict(lambda : -1) #not visited nodes evaluate to -1
         double_counted=defaultdict(list)
-        for source in self.lcolor: #find all components from all sources
+        for source in self.G.nodes_iter(): #find all components from all sources
             if self.color[source] == to_avoid or source in all_seen:
             #don't start a search on a bad node
                 continue
