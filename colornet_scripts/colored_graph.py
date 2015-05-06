@@ -87,8 +87,14 @@ class ColoredGraph(object):
         for color in filter(lambda x: x != scolor and x != tcolor, self.all_colors):
             connectible_nodes.intersection_update(self.lcbardict[color])
         self.color_pair_dict[scolor][tcolor] = len(self.color_set[scolor].intersection(connectible_nodes)) / len(self.color_set[scolor])
-        self.color_pair_dict[scolor][tcolor] = len(self.color_set[tcolor].intersection(connectible_nodes)) / len(self.color_set[tcolor])
-
+        self.color_pair_dict[tcolor][scolor] = len(self.color_set[tcolor].intersection(connectible_nodes)) / len(self.color_set[tcolor])
+    def calculate_color_adjacency(self):
+        self.calculate_color_sets()
+        colors_list = sorted(self.all_colors,key=lambda x: len(self.color_set[x]),reverset=True)
+        for i_1,scolor in enumerate(colors_list):
+            print("%i %s"%(i_1,scolor))
+            for tcolor in colors_list[i_1:]:
+                self.color_pair_connectivity(scolor,tcolor)
 
 
     def set_networkx_attributes(self):
