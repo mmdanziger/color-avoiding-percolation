@@ -8,15 +8,17 @@ script_path = os.path.dirname(os.path.realpath(__file__))
 from sys import argv
 get_item = lambda ind : lambda x: x[ind]
 
+
 class ColoredGraph(object):
 
     def __init__(self,autoload=True):
         self.G = nx.Graph()
         self.color={}
         self.all_colors=set()
-        self.lc_components={}
+        self.lcbardict={}
         self.lcolor=set()
         self.seb_lcolor=[]
+        self.color_pair_dict = defaultdict(dict)
         if autoload:
             self.load_edges()
             self.load_vertex_properties()
@@ -69,12 +71,26 @@ class ColoredGraph(object):
         for key,doubles in double_counted.items():
             comp_counter[key]+=len(doubles)
         max_key,count = list(sorted(comp_counter.items(),key=get_item(1),reverse=True))[0]
-        lcbar = [node for node in self.G.nodes_iter() if all_seen[node] == max_key] + double_counted[source]
-        self.lcolor = set(lcbar) if len(self.lcolor) ==0 else self.lcolor.intersection(lcbar)
+        lcbar = [node for node in self.G.nodes_iter() if all_seen[node] == max_key] + double_counted[max_key]
+        self.lcbardict[to_avoid] = lcbar
+        self.lcolor = self.lcolor.intersection(lcbar)
     def calculate_lcolor(self):
         self.lcolor = set(self.G.nodes_iter())
         for color in self.all_colors:
             self.calculate_lcbar(color)
+    def calculate_color_sets(self):
+        self.color_set = defaultdict(set)
+        for v,color in self.color.items():
+            self.color_set[color].add(v)
+    def color_pair_connectivity(self,scolor,tcolor):
+        connectible_nodes = set(self.G.nodes_iter())
+        for color in filter(lambda x: x != scolor and x != tcolor, self.all_colors):
+            connectible_nodes.intersection_update(self.lcbardict[color])
+        self.color_pair_dict[scolor][tcolor] = len(self.color_set[scolor].intersection(connectible_nodes)) / len(self.color_set[scolor])
+        self.color_pair_dict[scolor][tcolor] = len(self.color_set[tcolor].intersection(connectible_nodes)) / len(self.color_set[tcolor])
+
+
+
     def set_networkx_attributes(self):
          nx.set_node_attributes(self.G,"seb_lcolor",dict((k,1) if k in self.seb_lcolor else (k,0) for k in self.G.nodes_iter()))
          nx.set_node_attributes(self.G,"lcolor",dict((k,1) if k in self.lcolor else (k,0) for k in self.G.nodes_iter()))
