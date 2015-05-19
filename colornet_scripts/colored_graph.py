@@ -11,17 +11,20 @@ get_item = lambda ind : lambda x: x[ind]
 
 class ColoredGraph(object):
 
-    def __init__(self,autoload=True):
+    def __init__(self,autoload=True,lonlatids=True):
         self.G = nx.Graph()
         self.color={}
         self.all_colors=set()
         self.lcbardict={}
         self.lcolor=set()
         self.seb_lcolor=[]
+        self.lonlatids=lonlatids
+        self.lonlat={}
         self.color_pair_dict = defaultdict(dict)
         if autoload:
-            self.load_edges()
             self.load_vertex_properties()
+            self.load_edges()
+
 
     def load_edges(self,fname=None):
         fname =  os.path.join(script_path, "../real_data/caide-latest-complete-direct-edge-list.txt") if fname is None else fname
@@ -30,7 +33,7 @@ class ColoredGraph(object):
             for row in f:
                 try:
                     i,j = row.strip().split()
-                    self.G.add_edge(int(i),int(j))
+                    self.G.add_edge(self.lonlat[int(i)],self.lonlat[int(j)])if self.lonlatids else self.G.add_edge(int(i),int(j))
                 except ValueError:
                     pass
 
@@ -41,10 +44,12 @@ class ColoredGraph(object):
             for row in f:
                 thisid, thislat, thislon, thiscid, thisccode, thislcolor, thiskcore \
                         = row.strip().split()
-                self.color[int(thisid)] = thisccode
+                nodeid = (thislon,thislat) if self.lonlatids else int(thisid)
+                self.color[nodeid] = thisccode
+                self.lonlat[int(thisid)] = (thislon,thislat)
                 self.all_colors.add(thisccode)
                 if thislcolor == "1":
-                    self.seb_lcolor.append(int(thisid))
+                    self.seb_lcolor.append(nodeid)
     def calculate_lcbar(self,to_avoid):
         all_seen=defaultdict(lambda : -1) #not visited nodes evaluate to -1
         double_counted=defaultdict(list)
