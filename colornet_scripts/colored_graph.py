@@ -66,8 +66,8 @@ class ColoredGraph(object):
                 for v in thislevel:
                     if v not in seen:
                         seen[v]=level
-                        if all_seen[v] != -1: #this should only occur for a to_avoid node that
-                            double_counted[all_seen[v]].append(v) # set the level of vertex v
+                        if all_seen[v] != -1: #this should only occur for a to_avoid node that was already counted
+                            double_counted[all_seen[v]].append(v) # remember that this node also belongs to another tally
                         all_seen[v] = source
                         if self.color[v] != to_avoid:
                             nextlevel.update(self.G[v]) # add neighbors of v
@@ -76,6 +76,7 @@ class ColoredGraph(object):
         for key,doubles in double_counted.items():
             comp_counter[key]+=len(doubles)
         max_key,count = list(sorted(comp_counter.items(),key=get_item(1),reverse=True))[0]
+        #print(max_key)
         lcbar = [node for node in self.G.nodes_iter() if all_seen[node] == max_key] + double_counted[max_key]
         self.lcbardict[to_avoid] = lcbar
         self.lcolor = self.lcolor.intersection(lcbar)
