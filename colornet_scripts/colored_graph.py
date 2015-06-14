@@ -104,7 +104,10 @@ class ColoredGraph(object):
 
 
     def set_networkx_attributes(self):
-         nx.set_node_attributes(self.G,"seb_lcolor",dict((k,1) if k in self.seb_lcolor else (k,0) for k in self.G.nodes_iter()))
-         nx.set_node_attributes(self.G,"lcolor",dict((k,1) if k in self.lcolor else (k,0) for k in self.G.nodes_iter()))
-         nx.set_node_attributes(self.G,"color",self.color)
+         two2three = json.load(open( os.path.join(script_path, "../real_data/iso2to3.json")))
+         if self.lonlatids:
+             nx.set_node_attributes(self.G,"lcolor",dict((k,1) if k in self.seb_lcolor else (k,0) for k in self.G.nodes_iter()))
+         else:
+             nx.set_node_attributes(self.G,"lcolor",dict((k,1) if k in self.lcolor else (k,0) for k in self.G.nodes_iter()))
+         nx.set_node_attributes(self.G,"color",dict((k,bytes(two2three[v])) for k,v in self.color.items()))
 
