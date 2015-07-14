@@ -9,9 +9,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib import colors
 from numpy.random import shuffle
-import json
 from collections import OrderedDict, defaultdict
-import os
+import os,json
 from sys import exit
 
 script_path = os.path.dirname(os.path.realpath(__file__))
@@ -25,9 +24,9 @@ if len(argv) > 4:
     c_lat = (ll_lat + ur_lat) / 2
     c_lon = (ll_lon + ur_lon) / 2
 elif len(argv) == 2:
-    cloc = json.load(open(os.path.join(script_path, "../real_data/country_locations.json")))
+    country_bbox = json.load(open(os.path.join(script_path, "../real_data/country_locations.json")))
     try:
-        this_country = cloc[argv[1]]
+        this_country = country_bbox[argv[1]]
         ll_lat,ll_lon = this_country["ll"]
         ur_lat,ur_lon = this_country["ur"]
         c_lat,c_lon = this_country["c"]
@@ -40,6 +39,7 @@ else:
 # vertex_info
 vertexfile = os.path.join(script_path, "../real_data/caide-latest-complete-direct-vertex-properties.txt")
 edgefile = os.path.join(script_path, "../real_data/caide-latest-complete-direct-edge-list.txt")
+iso2to3 = json.load(open(os.path.join(script_path, "../real_data/iso2to3.json")))
 draw_edges = False
 # position in decimal lat/lon
 country = {}
@@ -127,9 +127,11 @@ for cidx,cid in enumerate(countries):
         nx.draw_networkx_nodes(G, pos, nodelist=[i for i in lon if country[i] == cid], node_size=80, node_color=country_colors[cidx], alpha=1)
 
     print("%s for %s"%(country_colors[cidx],id2code[cid]))
-    legend_handles.append(mlines.Line2D([],[],marker="o",markersize=8,linewidth=0,color=country_colors[cidx],label=id2code[cid],alpha=1))
+    legend_handles.append(mlines.Line2D([],[],marker="o",markersize=8,linewidth=0,color=country_colors[cidx],label=iso2to3[id2code[cid]],alpha=1))
 
-plt.legend(handles=legend_handles,loc=9,ncol=5,numpoints=1,framealpha=1,bbox_to_anchor=(0.5,0))
+plt.legend(handles=legend_handles,loc=9,ncol=4,numpoints=1,framealpha=1
+           ,bbox_to_anchor=(0.5,0)
+            )
 
 #\(G,pos,node_size=200,node_color='blue')
 if draw_edges:
