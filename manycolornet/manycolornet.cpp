@@ -1,6 +1,7 @@
 #include <algorithm>
 #include "manycolornet.h"
 #include "jsonutils.hpp"
+#include <assert.h>
 
 ManyColorNet::ManyColorNet(uint N, uint C) :
 N(N),C(C),S_color(N),adjacency_list(N),nodecolor(N),L_color(N),components(N),bfs_visited(N),randint(0,N-1)
@@ -33,6 +34,8 @@ void ManyColorNet::intersection_update_L_color(int color)
     
     CA_BFS(color);
     auto LcbarIndexPair = std::max_element(component_size.begin(), component_size.end(), [](std::pair<const uint,uint>& a, std::pair<const uint,uint>&b){return a.second < b.second;});
+    std::cout << "|L_cbar("<<color<<")| = " << LcbarIndexPair->second <<std::endl;
+    
     uint giant_index = LcbarIndexPair->first;
     for(auto index_to_restore : bfs_double_counted[giant_index]){
 	components[index_to_restore] = giant_index;
@@ -56,6 +59,8 @@ void ManyColorNet::find_L_color()
     for(uint i=0; i<C; ++i){
 	intersection_update_L_color(i);
     }
+    assert(S_color == std::count(L_color.begin(),L_color.end(),true));
+   
     numlinks_Scolor_history.emplace_back(std::make_pair(num_links,S_color));
 }
 
@@ -99,7 +104,7 @@ void ManyColorNet::CA_BFS(int color)
 			} 
 		    }
 		    if(bfs_visited[neighbor] == BFS::Black && nodecolor[neighbor] == color && components[neighbor] != i){ // encountered color node that has already been counted
-			bfs_double_counted[components[j]].push_back(j);
+			bfs_double_counted[components[neighbor]].push_back(neighbor);
 			components[neighbor] = i;
 			compsize++;
 		    }
