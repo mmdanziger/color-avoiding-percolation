@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <fstream>
 #include "manycolornet.h"
-#include "jsonutils.hpp"
 #include <assert.h>
 #include <cstdlib>
 
@@ -9,9 +8,11 @@ ManyColorNet::ManyColorNet(uint N, uint C) :
 N(N),C(C),S_color(N),adjacency_list(N),nodecolor(N),L_color(N),components(N),bfs_visited(N),randint(0,N-1)
 {
     gen.seed(time(0));
+    
     std::uniform_int_distribution<int> randcolor(0,C-1);
+    
     std::generate(nodecolor.begin(), nodecolor.end(), [&](){return randcolor(gen);});
-    std::fill(L_color.begin(),L_color.end(),true);
+    std::fill(L_color.begin(),L_color.end(),1);
     
 }
 
@@ -27,9 +28,32 @@ ManyColorNet::ManyColorNet(string node_list_fname, string edge_list_fname) :adja
     bfs_visited.resize(N);
     randint = std::uniform_int_distribution<uint>(0,N-1); 
     gen.seed(time(0));
-    std::fill(L_color.begin(),L_color.end(),true);
+    std::fill(L_color.begin(),L_color.end(),1);
     
 }
+
+void ManyColorNet::initialize_heterogeneous_colors(vector< double > rates)
+{
+  discrete_integer_distribution disc_int(&gen);
+  disc_int.set_rates(rates);
+  std::generate(nodecolor.begin(), nodecolor.end(), disc_int);
+  std::fill(L_color.begin(),L_color.end(),1);
+  C = rates.size();
+
+  
+}
+
+void ManyColorNet::set_S_set(vector< int > new_S_set)
+{
+  S_set = std::move(new_S_set);
+}
+
+void ManyColorNet::set_T_set(vector< int > new_T_set)
+{
+  T_set = std::move(new_T_set);
+}
+
+
 
 void ManyColorNet::build_network_to_k(double k)
 {
@@ -119,49 +143,51 @@ for(uint nid = 0; nid<N; nid++){
 }  
 
 
-
-
-
-
 void ManyColorNet::intersection_update_L_color(int color)
 {
     
     CA_BFS(color);
     auto LcbarIndexPair = std::max_element(component_size.begin(), component_size.end(), [](std::pair<const uint,uint>& a, std::pair<const uint,uint>&b){return a.second < b.second;});
+#ifdef DEBUG
     std::cout << "|L_cbar("<<color<<")| = " << LcbarIndexPair->second;
+#endif
     //jsonMap(component_size,std::cout);
     auto S_color0=S_color;
     uint giant_index = LcbarIndexPair->first;
     for(auto index_to_restore : bfs_double_counted[giant_index]){
 	components[index_to_restore] = giant_index;
-    }   
+    }
+#ifdef DEBUG
     if(std::count(components.begin(), components.end(), giant_index) != LcbarIndexPair->second){
 	std::cerr << "Miscounted components!! : counted " <<  LcbarIndexPair->second << " found " <<
 	std::count(components.begin(), components.end(), giant_index) << "!\n";
 	//throw 1;
     }
+#endif
     for(uint i=0; i<N; ++i){
 	if(components[i] != giant_index){
 	    if(L_color[i]){
-		L_color[i] = false;
+		L_color[i] = 0;
 		S_color--;
 	    }
 	}
     }
-    
+#ifdef DEBUG 
     std::cout << " ... restored "<<bfs_double_counted.size();
     std::cout << " ... reduced S_color by "<<S_color0 - S_color << " to " << S_color;
     std::cout << std::endl;
-    if(S_color > LcbarIndexPair->second){
-      
-    }
-    
+#endif
+//     if(S_color > LcbarIndexPair->second){
+//       
+//     }
+//     
     
 }
 
+
 void ManyColorNet::find_L_color()
 {
-    std::fill(L_color.begin(),L_color.end(),true);
+    std::fill(L_color.begin(),L_color.end(),1);
     S_color=N;
     std::vector<uint> color_order(C);
     struct nplusone{
@@ -176,42 +202,31 @@ void ManyColorNet::find_L_color()
   for(auto i: color_order){
 	intersection_update_L_color(i);
     }
-    assert(S_color == std::count(L_color.begin(),L_color.end(),true));
+    assert(S_color == std::count(L_color.begin(),L_color.end(),1));
    
     numlinks_Scolor_history.emplace_back(std::make_pair(num_links,S_color));
 }
 
-template <typename stream_t> 
-void ManyColorNet::writeLcolor(stream_t& stream)
+void ManyColorNet::find_L_color_ST()
 {
-  stream << "[";
-  for(uint i=0;i<N;++i){
-    if (i>0)
-      stream <<",\n";
-    stream << "[" << i << ", "<< static_cast<int>(L_color[i]) << "]";
-  }
-  stream << "]\n";
-  
+      std::fill(L_color.begin(),L_color.end(),1);
+      S_color=N;
+      for(auto avoid_color_T : T_set){
+	intersection_update_L_color(avoid_color_T);
+      }
+      assert(S_color == std::count(L_color.begin(),L_color.end(),1));
+      for(auto avoid_color_S : S_set){
+	for(int node_idx = 0; node_idx <N; node_idx++){
+	  if( L_color[node_idx] && nodecolor[node_idx] == avoid_color_S){
+	    L_color[node_idx]=0;
+	    S_color--;
+	  }
+      }
+      }
+      numlinks_Scolor_history.emplace_back(std::make_pair(num_links,S_color));
+
 }
 
-template <typename stream_t> 
-void ManyColorNet::writenodecolors(stream_t& stream)
-{
-  stream << "[";
-  for(uint i=0;i<N;++i){
-    if (i>0)
-      stream <<",\n";
-    stream << "[" << i << ", "<< nodecolor[i] << "]";
-  }
-  stream << "]\n";
-  
-}
-
-
-template <typename stream_t> void ManyColorNet::writeHistory(stream_t& stream)
-{
-    jsonPairArray(numlinks_Scolor_history, stream);
-}
 
 
 

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "manycolornet.cpp"
+#include "manycolornet.h"
 
 
 using std::vector;
