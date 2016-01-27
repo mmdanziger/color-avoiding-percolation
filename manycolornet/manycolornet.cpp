@@ -67,9 +67,18 @@ void ManyColorNet::build_network_to_k(double k)
 	    adjacency_list[s].push_back(t);
 	    adjacency_list[t].push_back(s);
 	    num_links++;
+
 	}
     }
 }
+
+void ManyColorNet::clear_network()
+{
+  adjacency_list.clear();
+  adjacency_list.resize(N);
+  num_links=0;
+}
+
 
 void ManyColorNet::add_link(int sid, int tid)
 {
@@ -147,7 +156,7 @@ void ManyColorNet::intersection_update_L_color(int color)
 {
     
     CA_BFS(color);
-    auto LcbarIndexPair = std::max_element(component_size.begin(), component_size.end(), [](std::pair<const uint,uint>& a, std::pair<const uint,uint>&b){return a.second < b.second;});
+    auto LcbarIndexPair = std::max_element(component_size.begin(), component_size.end(), [](std::pair<uint,uint>& a, std::pair<uint,uint>&b){return a.second < b.second;});
 #ifdef DEBUG
     std::cout << "|L_cbar("<<color<<")| = " << LcbarIndexPair->second;
 #endif
@@ -275,8 +284,10 @@ void ManyColorNet::CA_BFS(int color)
 		bfs_visited[j]=BFS::Black;
 
 	    }
+	component_size.push_back(std::make_pair(i,compsize));
+	  
 	}
-	component_size[i] = compsize;
+
 	//std::cout << ", discovered " << compsize << "nodes.\n";
     }
 }

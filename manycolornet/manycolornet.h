@@ -55,7 +55,7 @@ private:
     vector <int> components;
     vector <int> S_set;
     vector <int> T_set;
-    map <uint,uint> component_size;
+    vector <pair<uint,uint>> component_size;
     std::queue<uint> bfs_queue;
     vector <BFS> bfs_visited;
     map <uint,vector<uint>> bfs_double_counted;
@@ -71,9 +71,11 @@ public:
     void set_S_set(vector<int> new_S_set);
     void set_T_set(vector<int> new_T_set);
     void build_network_to_k(double k);
+    void clear_network();
     void intersection_update_L_color(int color);
     void find_L_color();
     void find_L_color_ST();
+    uint get_S_color(){ return S_color;}
     void CA_BFS(int color);
     void load_edges(string edge_list_fname);
     void load_node_colors(string node_list_fname);
