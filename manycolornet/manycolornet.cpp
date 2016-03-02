@@ -16,13 +16,17 @@ N(N),C(C),S_color(N),adjacency_list(N),nodecolor(N),L_color(N),components(N),bfs
     
 }
 
-ManyColorNet::ManyColorNet(string node_list_fname, string edge_list_fname) :adjacency_list(1),nodecolor(1)
+ManyColorNet::ManyColorNet(string node_list_fname, string edge_list_fname, int do_percolation) :adjacency_list(1),nodecolor(1)
 {
     C=0;N=0;
     load_node_colors(node_list_fname);
-    load_edges(edge_list_fname);
-    N = adjacency_list.size();    
-    S_color=N;
+    if(do_percolation){
+      load_edges_to_container(edge_list_fname);
+    }else{
+      load_edges(edge_list_fname);  
+    }
+    N = adjacency_list.size();  
+    S_color=N;  
     L_color.resize(N);
     components.resize(N);
     bfs_visited.resize(N);
@@ -111,6 +115,30 @@ while(std::getline(f, line)) {
 }
   f.close();
 }
+
+
+void ManyColorNet::load_edges_to_container(string edge_list_fname)
+{
+std::ifstream f(edge_list_fname);
+string line,num_string;
+uint sid,tid;
+while(std::getline(f, line)) {
+  if (line[0] == '#')
+    continue;
+  auto space_loc = std::find(line.begin(), line.end(), ' ');
+  if (space_loc != line.end()){
+    num_string = string(line.begin(), space_loc);
+    sid = atoi(num_string.c_str());
+    num_string = string(space_loc, line.end());
+    tid = atoi(num_string.c_str());
+    edge_list.emplace_back(std::make_pair(sid,tid));
+    
+  }
+  
+}
+  f.close();
+}
+
 
 void ManyColorNet::load_node_colors(string node_list_fname)
 {
@@ -236,6 +264,27 @@ void ManyColorNet::find_L_color_ST()
 
 }
 
+void ManyColorNet::do_percolation(std::queue< uint > measuring_index_queue)
+{
+int stop_at = measuring_index_queue.front();
+measuring_index_queue.pop();
+std::shuffle(edge_list.begin(), edge_list.end(), gen);
+for(int i=0; i<edge_list.size(); ++i){
+  add_link(edge_list[i].first,edge_list[i].second);
+  if(i >= stop_at){
+      find_L_color();
+      std::cout <<num_links << "  "  << S_color << " \n";
+      if (!measuring_index_queue.empty()){
+	stop_at = measuring_index_queue.front();
+	measuring_index_queue.pop();
+      } else {
+	break;
+      }
+  }
+  
+}
+  
+}
 
 
 

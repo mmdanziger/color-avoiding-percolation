@@ -3,13 +3,14 @@
 #include <queue>
 #include <random>
 #include <string>
+#include <utility>
 #include "jsonutils.hpp"
 
 using std::vector;
 using std::map;
 using std::pair;
 using std::string;
-
+using upair = std::pair<uint,uint>;
 enum class BFS {Black, White, Gray};
 
 struct discrete_integer_distribution{
@@ -55,7 +56,8 @@ private:
     vector <int> components;
     vector <int> S_set;
     vector <int> T_set;
-    vector <pair<uint,uint>> component_size;
+    vector <upair> edge_list;
+    vector <upair> component_size;
     std::queue<uint> bfs_queue;
     vector <BFS> bfs_visited;
     map <uint,vector<uint>> bfs_double_counted;
@@ -66,7 +68,7 @@ private:
     
 public:
     ManyColorNet(uint N, uint C);
-    ManyColorNet(string node_list_fname, string edge_list_fname);
+    ManyColorNet(string node_list_fname, string edge_list_fname, int do_percolation =0 );
     void initialize_heterogeneous_colors(std::vector<double> rates);
     void set_S_set(vector<int> new_S_set);
     void set_T_set(vector<int> new_T_set);
@@ -78,13 +80,16 @@ public:
     uint get_S_color(){ return S_color;}
     void CA_BFS(int color);
     void load_edges(string edge_list_fname);
+    void load_edges_to_container(string edge_list_fname);
     void load_node_colors(string node_list_fname);
+    void do_percolation(std::queue<uint> measuring_index_queue);
     template<typename stream_t> void writeHistory(stream_t&  stream);
     template<typename stream_t> void writeLcolor(stream_t&  stream);
     template<typename stream_t> void writenodecolors(stream_t&  stream);
 
     void add_link(int sid, int tid);
-    
+    const uint get_N() {return N;}
+    const uint get_numlinks(){ return num_links > edge_list.size() ? num_links : edge_list.size();}
 };
 
 
