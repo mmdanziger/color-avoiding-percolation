@@ -64,6 +64,8 @@ private:
     std::mt19937 gen;
     std::uniform_int_distribution<uint> randint;
     vector<std::pair<uint, uint> > numlinks_Scolor_history;
+    vector<std::pair<uint, uint> > numlinks_S_history;
+    
     
     
 public:
@@ -76,6 +78,7 @@ public:
     void clear_network();
     void intersection_update_L_color(int color);
     void find_L_color();
+    void find_L_colorblind();
     void find_L_color_ST();
     uint get_S_color(){ return S_color;}
     void CA_BFS(int color);
@@ -83,7 +86,8 @@ public:
     void load_edges_to_container(string edge_list_fname);
     void load_node_colors(string node_list_fname);
     void do_percolation(std::queue<uint> measuring_index_queue);
-    template<typename stream_t> void writeHistory(stream_t&  stream);
+    template<typename stream_t> void writeColorHistory(stream_t&  stream);
+    template<typename stream_t> void writeColorblindHistory(stream_t&  stream);
     template<typename stream_t> void writeLcolor(stream_t&  stream);
     template<typename stream_t> void writenodecolors(stream_t&  stream);
 
@@ -121,7 +125,12 @@ void ManyColorNet::writenodecolors(stream_t& stream)
 }
 
 
-template <typename stream_t> void ManyColorNet::writeHistory(stream_t& stream)
+template <typename stream_t> void ManyColorNet::writeColorHistory(stream_t& stream)
 {
     jsonPairArray(numlinks_Scolor_history, stream);
+}
+
+template <typename stream_t> void ManyColorNet::writeColorblindHistory(stream_t& stream)
+{
+    jsonPairArray(numlinks_S_history, stream);
 }

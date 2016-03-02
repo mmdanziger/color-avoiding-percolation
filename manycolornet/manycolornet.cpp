@@ -221,6 +221,16 @@ void ManyColorNet::intersection_update_L_color(int color)
     
 }
 
+void ManyColorNet::find_L_colorblind()
+{
+  CA_BFS(-1);
+  auto giantIndexPair = std::max_element(component_size.begin(), component_size.end(), [](std::pair<uint,uint>& a, std::pair<uint,uint>&b){return a.second < b.second;});
+  uint giant_index = giantIndexPair->first;
+  uint S = giantIndexPair->second;
+  numlinks_S_history.push_back(std::make_pair(num_links,S));
+
+}
+
 
 void ManyColorNet::find_L_color()
 {
@@ -269,17 +279,16 @@ void ManyColorNet::do_percolation(std::queue< uint > measuring_index_queue)
 int stop_at = measuring_index_queue.front();
 measuring_index_queue.pop();
 std::shuffle(edge_list.begin(), edge_list.end(), gen);
-for(int i=0; i<edge_list.size(); ++i){
+for(int i=0; i<edge_list.size() && !measuring_index_queue.empty(); ++i){
   add_link(edge_list[i].first,edge_list[i].second);
   if(i >= stop_at){
       find_L_color();
+      find_L_colorblind();
       std::cout <<num_links << "  "  << S_color << " \n";
-      if (!measuring_index_queue.empty()){
-	stop_at = measuring_index_queue.front();
-	measuring_index_queue.pop();
-      } else {
-	break;
-      }
+      
+      stop_at = measuring_index_queue.front();
+      measuring_index_queue.pop();
+      
   }
   
 }

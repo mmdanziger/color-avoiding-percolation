@@ -26,11 +26,20 @@ int main(int argc, char **argv) {
     MCN.do_percolation(measure_queue);
     
     /*WRITE OUTPUT */
-    std::stringstream ofname;
-    
-    ofname <<"/tmp/ASpercolation_N"<<MCN.get_N() <<"_id"<< rand()%9 << rand()%9 <<rand()%9 <<rand()%9 <<".json";    
-    std::ofstream ofile(ofname.str());
-    MCN.writeHistory(ofile);
+    std::stringstream idstring;
+    idstring <<"_id" << rand()%9 << rand()%9 <<rand()%9 <<rand()%9 << ".json";
+    std::stringstream ofname1;
+    ofname1 <<"/tmp/AScolorpercolation_N"<<MCN.get_N();
+    std::ofstream ofile(ofname1.str() + idstring.str());
+    MCN.writeColorHistory(ofile);
     ofile.close();
+    
+    std::stringstream ofname2;
+    ofname2 <<"/tmp/ASpercolation_N"<<MCN.get_N();
+    std::ofstream ofile2(ofname2.str() + idstring.str());
+    MCN.writeColorblindHistory(ofile2);
+    ofile2.close();
+    
+    
     return 0;
 }

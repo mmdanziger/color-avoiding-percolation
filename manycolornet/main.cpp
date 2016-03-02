@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
 	MCN.find_L_color();
     }
     std::ofstream ofile("/tmp/Scolor.json");
-    MCN.writeHistory(ofile);
+    MCN.writeColorHistory(ofile);
     ofile.close();
     return 0;
 }
