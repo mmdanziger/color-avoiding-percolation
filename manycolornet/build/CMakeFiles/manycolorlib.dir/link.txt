@@ -1,2 +1,0 @@
-/usr/bin/ar qc libmanycolorlib.a  CMakeFiles/manycolorlib.dir/manycolornet.cpp.o
-/usr/bin/ranlib libmanycolorlib.a
