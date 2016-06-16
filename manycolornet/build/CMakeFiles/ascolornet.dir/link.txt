@@ -1,0 +1,1 @@
+/usr/bin/c++    -std=c++11 -Ofast -fopenmp -march=native -Wall -Wno-unused-local-typedefs   CMakeFiles/ascolornet.dir/main_as.cpp.o  -o ascolornet -rdynamic libmanycolorlib.a 

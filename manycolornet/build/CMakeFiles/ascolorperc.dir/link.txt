@@ -1,0 +1,1 @@
+/usr/bin/c++    -std=c++11 -Ofast -fopenmp -march=native -Wall -Wno-unused-local-typedefs   CMakeFiles/ascolorperc.dir/main_as_perc.cpp.o  -o ascolorperc -rdynamic libmanycolorlib.a 
