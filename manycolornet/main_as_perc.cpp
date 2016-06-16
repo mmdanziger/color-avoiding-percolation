@@ -40,11 +40,6 @@ int main(int argc, char **argv) {
     MCN.writeColorblindHistory(ofile2);
     ofile2.close();
     
-    std::stringstream ofname3;
-    ofname3 <<"/tmp/ASTwoCorepercolation_N"<<MCN.get_N();
-    std::ofstream ofile3(ofname3.str() + idstring.str());
-    MCN.writeTwoCoreHistory(ofile3);
-    ofile3.close();
     
     return 0;
 }
