@@ -65,6 +65,7 @@ private:
     std::uniform_int_distribution<uint> randint;
     vector<std::pair<uint, uint> > numlinks_Scolor_history;
     vector<std::pair<uint, uint> > numlinks_S_history;
+    vector<std::pair<uint, uint> > numlinks_S_twoCore_history;
     
     
     
@@ -80,14 +81,18 @@ public:
     void find_L_color();
     void find_L_colorblind();
     void find_L_color_ST();
+    void find_L_twoCore();
     uint get_S_color(){ return S_color;}
     void CA_BFS(int color);
+    bool twoCoreAlive(uint id);
+    void twoCore_BFS();
     void load_edges(string edge_list_fname);
     void load_edges_to_container(string edge_list_fname);
     void load_node_colors(string node_list_fname);
     void do_percolation(std::queue<uint> measuring_index_queue);
     template<typename stream_t> void writeColorHistory(stream_t&  stream);
     template<typename stream_t> void writeColorblindHistory(stream_t&  stream);
+    template<typename stream_t> void writeTwoCoreHistory(stream_t&  stream);
     template<typename stream_t> void writeLcolor(stream_t&  stream);
     template<typename stream_t> void writenodecolors(stream_t&  stream);
 
@@ -133,4 +138,9 @@ template <typename stream_t> void ManyColorNet::writeColorHistory(stream_t& stre
 template <typename stream_t> void ManyColorNet::writeColorblindHistory(stream_t& stream)
 {
     jsonPairArray(numlinks_S_history, stream);
+}
+
+template <typename stream_t> void ManyColorNet::writeTwoCoreHistory(stream_t& stream)
+{
+    jsonPairArray(numlinks_S_twoCore_history, stream);
 }

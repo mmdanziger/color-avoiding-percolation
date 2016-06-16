@@ -1,0 +1,1 @@
+/usr/bin/c++    -std=c++11 -Ofast -fopenmp -march=native -Wall -Wno-unused-local-typedefs   CMakeFiles/heterogenet.dir/main_hetero.cpp.o  -o heterogenet -rdynamic libmanycolorlib.a 

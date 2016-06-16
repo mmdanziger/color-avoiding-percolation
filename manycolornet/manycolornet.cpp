@@ -231,6 +231,18 @@ void ManyColorNet::find_L_colorblind()
 
 }
 
+void ManyColorNet::find_L_twoCore()
+{
+  twoCore_BFS();
+  auto giantIndexPair = std::max_element(component_size.begin(), component_size.end(), [](std::pair<uint,uint>& a, std::pair<uint,uint>&b){return a.second < b.second;});
+  uint giant_index = giantIndexPair->first;
+  uint StwoCore = giantIndexPair->second;
+  numlinks_S_twoCore_history.push_back(std::make_pair(num_links,StwoCore));
+
+}
+
+
+
 
 void ManyColorNet::find_L_color()
 {
@@ -284,7 +296,8 @@ for(int i=0; i<edge_list.size() && !measuring_index_queue.empty(); ++i){
   if(i >= stop_at){
       find_L_color();
       find_L_colorblind();
-      std::cout <<num_links << "  "  << S_color << " \n";
+      find_L_twoCore();
+      std::cout <<num_links << "  "  << S_color <<" \n";
       
       stop_at = measuring_index_queue.front();
       measuring_index_queue.pop();
@@ -294,6 +307,8 @@ for(int i=0; i<edge_list.size() && !measuring_index_queue.empty(); ++i){
 }
   
 }
+
+
 
 
 
@@ -338,6 +353,80 @@ void ManyColorNet::CA_BFS(int color)
 			compsize++;
 		    }
    
+		}
+		bfs_visited[j]=BFS::Black;
+
+	    }
+	component_size.push_back(std::make_pair(i,compsize));
+	  
+	}
+
+	//std::cout << ", discovered " << compsize << "nodes.\n";
+    }
+}
+
+bool ManyColorNet::twoCoreAlive(uint id)
+{
+    if(bfs_visited[id] == BFS::Black){
+      return false;
+    }
+
+    if(adjacency_list[id].size() < 2){
+      bfs_visited[id] = BFS::Black;
+      return true;
+    }
+    int alive_neighbors = 0;
+    for(auto  neighbor: adjacency_list[id]){
+      if(bfs_visited[neighbor]!=BFS::Black)
+	alive_neighbors++;
+    }
+    if(alive_neighbors <2){
+      bfs_visited[id] = BFS::Black;
+      return true;
+    }
+    return false;
+}
+
+void ManyColorNet::twoCore_BFS()
+{
+    std::fill(components.begin(),components.end(),-1);
+    std::fill(bfs_visited.begin(), bfs_visited.end(),BFS::White);
+      int twoCoreChangeCount=0,totalTwoCoreChanges=0;
+  
+    do{
+      twoCoreChangeCount=0;
+      for(uint i=0; i<N; i++){
+      if(twoCoreAlive(i))
+	twoCoreChangeCount++;
+    }
+      totalTwoCoreChanges+=twoCoreChangeCount;
+    }while(twoCoreChangeCount);
+    std::cout << "TwoCore Removed " << totalTwoCoreChanges << "\n";
+    while(!bfs_queue.empty()){ bfs_queue.pop();}
+    component_size.clear();
+    bfs_double_counted.clear();
+    
+    uint j,compsize=0;
+    for(uint i=0; i<N; ++i){
+	compsize=0;
+	//if(nodecolor[i] == color )
+	 // std::cout <<"Cannot start here: nodecolor["<<i<<"] == "<<color << "(cause it's " << nodecolor[i];
+	if(bfs_visited[i] == BFS::White){
+	  //  std::cout << "("<<color <<")Starting search from " << i << " of color " << nodecolor[i];// <<std::endl;
+	    bfs_queue.push(i);
+	    bfs_visited[i]=BFS::Gray;
+	    components[i]=i;
+	    compsize++;
+	    while(!bfs_queue.empty()){
+		j=bfs_queue.front();
+		bfs_queue.pop();
+		for(auto neighbor : adjacency_list[j]){
+		    if(bfs_visited[neighbor] == BFS::White){
+			bfs_queue.push(neighbor); // <-- only path that increases queue
+			bfs_visited[neighbor] = BFS::Gray;
+			components[neighbor] = i;
+			compsize++;
+		    }
 		}
 		bfs_visited[j]=BFS::Black;
 
