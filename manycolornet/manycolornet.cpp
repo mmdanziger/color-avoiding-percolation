@@ -179,6 +179,48 @@ for(uint nid = 0; nid<N; nid++){
   f.close();
 }  
 
+void ManyColorNet::shuffle_colors()
+{
+  std::uniform_int_distribution<uint> rand_node(0,N-1);
+  int sweeps = 5;
+  for(uint i = 0; i< sweeps*N; ++i)
+    std::swap( nodecolor[rand_node(gen)],nodecolor[rand_node(gen)]);
+  
+}
+
+void ManyColorNet::shuffle_links()
+{
+  vector<uint> edge_ends;
+  for(auto & edge_pair : edge_list){
+   edge_ends.push_back(edge_pair.first);
+   edge_ends.push_back(edge_pair.second);
+  }
+  std::shuffle(edge_ends.begin(),edge_ends.end(),gen);
+  std::uniform_int_distribution<uint> rand_edge_end(0,edge_ends.size()-1);
+  int self_link_corrections = 0;
+  for(uint i = 0; i<edge_ends.size()-1; i+=2){
+    if(edge_ends[i] == edge_ends[i+1]){
+      int this_id = edge_ends[i];
+      int j = rand_edge_end(gen);
+      while( edge_ends[j] == this_id 
+	|| (j>0 && edge_ends[j-1] == this_id)
+	|| (j<edge_ends.size()-1 && edge_ends[j+1] == this_id) )
+      {
+	  j = rand_edge_end(gen);
+      }
+      self_link_corrections++;
+    }
+    
+  }
+  int i = 0;
+  for(auto & edge_pair : edge_list){
+    edge_pair.first = edge_ends[i];
+    edge_pair.second = edge_ends[i+1];
+    i+=2;
+  }
+  std::cout << "corrected " <<self_link_corrections << " links.\n";
+}
+
 
 void ManyColorNet::intersection_update_L_color(int color)
 {
@@ -401,7 +443,7 @@ void ManyColorNet::twoCore_BFS()
     }
       totalTwoCoreChanges+=twoCoreChangeCount;
     }while(twoCoreChangeCount);
-    std::cout << "TwoCore Removed " << totalTwoCoreChanges << "\n";
+   // std::cout << "TwoCore Removed " << totalTwoCoreChanges << "\n";
     while(!bfs_queue.empty()){ bfs_queue.pop();}
     component_size.clear();
     bfs_double_counted.clear();

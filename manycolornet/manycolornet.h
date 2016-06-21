@@ -73,6 +73,8 @@ public:
     ManyColorNet(uint N, uint C);
     ManyColorNet(string node_list_fname, string edge_list_fname, int do_percolation =0 );
     void initialize_heterogeneous_colors(std::vector<double> rates);
+    void shuffle_colors();
+    void shuffle_links();
     void set_S_set(vector<int> new_S_set);
     void set_T_set(vector<int> new_T_set);
     void build_network_to_k(double k);
