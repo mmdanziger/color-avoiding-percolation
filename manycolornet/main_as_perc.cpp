@@ -15,10 +15,15 @@ using std::vector;
 
 int main(int argc, char **argv) {
     srand(time(0));
-    string data_dir = argc > 1 ? string(argv[1]) : "/home/micha/secret_mp/real_data/";
-    int samples = argc >2? atoi(argv[2]) : 100;
+    string data_dir = argc > 2 ? string(argv[2]) : "/home/micha/secret_mp/real_data/";
+    int samples = argc >1? atoi(argv[1]) : 100;
     ManyColorNet MCN(data_dir + "caide-latest-complete-direct-vertex-colors-only.txt",data_dir + "caide-latest-complete-direct-edge-list.txt", 1);
-    int linspace = 1;
+    
+    int linspace = 0;
+        if(strstr(argv[0],"linspace"))
+    {
+      linspace=1;
+    }
     std::queue<uint> measure_queue;
 
     //linear spacing sucks
@@ -32,7 +37,7 @@ int main(int argc, char **argv) {
     //log spacing
     double maxpower  = log10(MCN.get_numlinks());
     double minpower  = log10(1.0/static_cast<double>(MCN.get_numlinks()));
-    double step = (maxpower - minpower) / samples;
+    double step = (maxpower - minpower) / (samples - 1);
     int last_one=0;
     for(uint i=0; i<samples; ++i){
 	int to_measure = round(pow10(minpower + i*step));
