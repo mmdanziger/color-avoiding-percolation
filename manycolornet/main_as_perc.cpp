@@ -40,13 +40,17 @@ int main(int argc, char **argv) {
     double step = (maxpower - minpower) / (samples - 1);
     int last_one=0;
     for(uint i=0; i<samples; ++i){
+      
 	int to_measure = round(pow10(minpower + i*step));
 	if(to_measure > 0 && to_measure < MCN.get_numlinks() && to_measure != last_one){
 	  measure_queue.push(to_measure);
 	  last_one = to_measure;
 	}
+
+      
     }
     }
+
     std::string style_string = "";
     if(strstr(argv[0],"shuffle_colors"))
     {

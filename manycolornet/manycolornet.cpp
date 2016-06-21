@@ -333,7 +333,7 @@ void ManyColorNet::do_percolation(std::queue< uint > measuring_index_queue)
 int stop_at = measuring_index_queue.front();
 measuring_index_queue.pop();
 std::shuffle(edge_list.begin(), edge_list.end(), gen);
-for(int i=0; i<edge_list.size() && !measuring_index_queue.empty(); ++i){
+for(int i=0; i<edge_list.size(); ++i){
   add_link(edge_list[i].first,edge_list[i].second);
   if(i >= stop_at){
       find_L_color();
@@ -342,11 +342,18 @@ for(int i=0; i<edge_list.size() && !measuring_index_queue.empty(); ++i){
       std::cout <<num_links << "  "  << S_color <<" \n";
       
       stop_at = measuring_index_queue.front();
-      measuring_index_queue.pop();
-      
+      measuring_index_queue.pop();  
+      if( measuring_index_queue.size() == 0)
+	stop_at = edge_list.size();
   }
+
   
 }
+      find_L_color();
+      find_L_colorblind();
+      find_L_twoCore();
+      std::cout <<num_links << "  "  << S_color <<" \n";
+  
   
 }
 
