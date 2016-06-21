@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
     } else {
     //log spacing
     double maxpower  = log10(MCN.get_numlinks());
-    double minpower  = log10(1.0/static_cast<double>(MCN.get_numlinks()));
+    double minpower  = 0;
     double step = (maxpower - minpower) / (samples - 1);
     int last_one=0;
     for(uint i=0; i<samples; ++i){
