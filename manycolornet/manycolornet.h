@@ -88,6 +88,7 @@ public:
     void CA_BFS(int color);
     bool twoCoreAlive(uint id);
     void twoCore_BFS();
+    vector< vector< long > > count_same_color_links(long numTrials);
     void load_edges(string edge_list_fname);
     void load_edges_to_container(string edge_list_fname);
     void load_node_colors(string node_list_fname);

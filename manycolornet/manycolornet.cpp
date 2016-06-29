@@ -487,3 +487,30 @@ void ManyColorNet::twoCore_BFS()
 	//std::cout << ", discovered " << compsize << "nodes.\n";
     }
 }
+
+vector<vector<long>> ManyColorNet::count_same_color_links(long numTrials)
+{
+  vector<long> real_data(C);
+  for(auto & edge_pair : edge_list){
+      if(nodecolor[edge_pair.first] == nodecolor[edge_pair.second])
+	real_data[nodecolor[edge_pair.first]]++;
+  }
+  vector<long> shuffled_data(C);
+  for(long i =0; i<numTrials; i++){
+    shuffle_colors();
+    for(auto & edge_pair : edge_list){
+      if(nodecolor[edge_pair.first] == nodecolor[edge_pair.second])
+	shuffled_data[nodecolor[edge_pair.first]]++;
+  }  
+  }
+  vector<long> color_freq(C);
+  for(auto c: nodecolor){
+    color_freq[c]++;
+  }
+  vector<vector<long>> output;
+  for(long i=0;i<C; ++i){
+   vector<long> row{real_data[i],shuffled_data[i],color_freq[i]};
+    output.push_back(row);
+  }
+  return output;
+}
