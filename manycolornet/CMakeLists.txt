@@ -16,7 +16,7 @@ target_link_libraries(ascolorperc manycolorlib)
 target_link_libraries(ascolorstat manycolorlib)
 target_link_libraries(astrustsr manycolorlib)
 
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Ofast -fopenmp -march=native -Wall -Wno-unused-local-typedefs")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11 -O0 -march=native -Wall -Wno-unused-local-typedefs")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Ofast -fopenmp -march=native -Wall -Wno-unused-local-typedefs")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11 -O0 -march=native -Wall -Wno-unused-local-typedefs")
 
 install(TARGETS manycolornet RUNTIME DESTINATION bin)

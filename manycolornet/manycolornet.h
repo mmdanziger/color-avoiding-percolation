@@ -90,7 +90,7 @@ public:
     void find_L_color();
     void find_L_colorblind();
     void find_L_color_ST();
-    void find_L_color_trust_SR(int S, int R);
+    pair< int, int > find_L_color_trust_SR(int S, int R);
     void find_L_twoCore();
     uint get_S_color(){ return S_color;}
     void CA_BFS(int color);

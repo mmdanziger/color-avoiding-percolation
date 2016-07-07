@@ -225,8 +225,8 @@ void ManyColorNet::shuffle_links()
 
 std::vector< vector<int> > ManyColorNet::get_colors_by_freq()
 {
-std::vector<vector<int>> frequencies(C);
-for(int i=0; i<C; i++)
+std::vector<vector<int>> frequencies(C+1);
+for(int i=0; i<C+1; i++)
 {
   frequencies[i].resize(2);
   frequencies[i][0]=i;
@@ -328,7 +328,7 @@ void ManyColorNet::find_L_color()
 }
 
 
-void ManyColorNet::find_L_color_trust_SR(int S, int R)
+std::pair<int,int> ManyColorNet::find_L_color_trust_SR(int S, int R)
 {
   
   vector<int> all_except_SR;
@@ -340,6 +340,17 @@ void ManyColorNet::find_L_color_trust_SR(int S, int R)
   set_S_set(all_except_SR);
   set_T_set(all_except_SR);
   find_L_color_ST();
+  int scount =0,rcount=0;
+  for(int i = 0; i<N; i++){
+    if (L_color[i]){
+      if(nodecolor[i] == S)
+	scount++;
+      else if(nodecolor[i] == R)
+	rcount++;
+    }
+    
+  }
+    return std::make_pair(scount,rcount);
 }
 
 
@@ -396,7 +407,7 @@ void ManyColorNet::load_network_from_edgelist_to_p(double p)
 {
 //clear_network();
 std::shuffle(edge_list.begin(), edge_list.end(), gen);
-for(int i=0; i<(edge_list.size()); ++i){
+for(int i=0; i<(p * edge_list.size()); ++i){
   //std::cout << i << "/  " << edge_list.size() << " ";
   add_link(edge_list[i].first,edge_list[i].second);
   

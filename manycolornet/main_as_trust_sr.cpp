@@ -17,10 +17,10 @@ int main(int argc, char **argv) {
     string data_dir = argc > 3 ? string(argv[3]) : "/home/micha/secret_mp/real_data/";
     int top_k = argc > 1? atoi(argv[1]) : 20;
     float p = argc > 2? atof(argv[2]) : 1;
-    std::cout << p << "\n";
+//    std::cout << p << "\n";
     ManyColorNet MCN(data_dir + "caide-latest-complete-direct-vertex-colors-only.txt",data_dir + "caide-latest-complete-direct-edge-list.txt", 1);
     int Scol;
-    MCN.load_network_from_edgelist_to_p(1);
+    MCN.load_network_from_edgelist_to_p(p);
     std::stringstream ofname;
     ofname << "/tmp/AS_SR_top_"<<top_k<<"_p"<<p<<".txt";
     std::ofstream ofile(ofname.str());
@@ -30,10 +30,12 @@ int main(int argc, char **argv) {
       for(int R = S; R<top_k; R++){
 	int sid = most_common_colors[S][0];
 	int rid = most_common_colors[R][0];
-	
-	MCN.find_L_color_trust_SR(sid,rid);
+	std::cout << "Checking " << sid << ", " <<rid<<std::endl;
+	auto srpair = MCN.find_L_color_trust_SR(sid,rid);
 	Scol = MCN.get_S_color();
-	ofile << sid << "\t" << rid << "\t" << Scol << "\t" << most_common_colors[S][1] << "\t" << most_common_colors[R][1] << "\n";
+	ofile << sid << "\t" << rid << "\t" << Scol << "\t" << 
+	srpair.first << "\t" << srpair.second << "\t" <<
+	most_common_colors[S][1] << "\t" << most_common_colors[R][1] << "\n";
 	ofile.flush();
       }
     }
