@@ -58,7 +58,6 @@ void ManyColorNet::set_T_set(vector< int > new_T_set)
 }
 
 
-
 void ManyColorNet::build_network_to_k(double k)
 {
     uint s,t;
@@ -86,12 +85,14 @@ void ManyColorNet::clear_network()
 
 void ManyColorNet::add_link(int sid, int tid)
 {
- // std::cout << "Adding link " <<sid << " -- " << tid << std::endl;
+  //std::cout << "Adding link " <<sid << " -- " << tid;
 if(std::find(adjacency_list[sid].cbegin(), adjacency_list[sid].cend(), tid) == adjacency_list[sid].cend()){
 	    adjacency_list[sid].push_back(tid);
 	    adjacency_list[tid].push_back(sid);
 	    num_links++;
 	}
+//std::cout << " success." << std::endl;
+  
 }
 
 
@@ -222,6 +223,24 @@ void ManyColorNet::shuffle_links()
 }
 
 
+std::vector< vector<int> > ManyColorNet::get_colors_by_freq()
+{
+std::vector<vector<int>> frequencies(C);
+for(int i=0; i<C; i++)
+{
+  frequencies[i].resize(2);
+  frequencies[i][0]=i;
+  frequencies[i][1]=0;
+}
+
+for(auto & color: nodecolor){
+  frequencies[color][1]++;
+}
+std::sort(std::begin(frequencies), std::end(frequencies),[](vector<int> & a, vector<int> & b){return a[1] > b[1];});
+return frequencies;
+}
+
+
 void ManyColorNet::intersection_update_L_color(int color)
 {
     
@@ -308,6 +327,22 @@ void ManyColorNet::find_L_color()
     numlinks_Scolor_history.emplace_back(std::make_pair(num_links,S_color));
 }
 
+
+void ManyColorNet::find_L_color_trust_SR(int S, int R)
+{
+  
+  vector<int> all_except_SR;
+  for(int i=0; i<C; i++)
+  {
+    if(i!=S && i!=R)
+      all_except_SR.push_back(i);
+  }
+  set_S_set(all_except_SR);
+  set_T_set(all_except_SR);
+  find_L_color_ST();
+}
+
+
 void ManyColorNet::find_L_color_ST()
 {
       std::fill(L_color.begin(),L_color.end(),1);
@@ -357,7 +392,17 @@ for(int i=0; i<edge_list.size(); ++i){
   
 }
 
+void ManyColorNet::load_network_from_edgelist_to_p(double p)
+{
+//clear_network();
+std::shuffle(edge_list.begin(), edge_list.end(), gen);
+for(int i=0; i<(edge_list.size()); ++i){
+  //std::cout << i << "/  " << edge_list.size() << " ";
+  add_link(edge_list[i].first,edge_list[i].second);
+  
+}
 
+}
 
 
 

@@ -13,6 +13,12 @@ using std::string;
 using upair = std::pair<uint,uint>;
 enum class BFS {Black, White, Gray};
 
+struct color_freq{
+  int color;
+  int frequency;
+};
+
+
 struct discrete_integer_distribution{
   int m_maxN;
   vector<double> rates;
@@ -78,11 +84,13 @@ public:
     void set_S_set(vector<int> new_S_set);
     void set_T_set(vector<int> new_T_set);
     void build_network_to_k(double k);
+    void load_network_from_edgelist_to_p(double p);
     void clear_network();
     void intersection_update_L_color(int color);
     void find_L_color();
     void find_L_colorblind();
     void find_L_color_ST();
+    void find_L_color_trust_SR(int S, int R);
     void find_L_twoCore();
     uint get_S_color(){ return S_color;}
     void CA_BFS(int color);
@@ -93,6 +101,7 @@ public:
     void load_edges_to_container(string edge_list_fname);
     void load_node_colors(string node_list_fname);
     void do_percolation(std::queue<uint> measuring_index_queue);
+    vector< vector<int> > get_colors_by_freq();
     template<typename stream_t> void writeColorHistory(stream_t&  stream);
     template<typename stream_t> void writeColorblindHistory(stream_t&  stream);
     template<typename stream_t> void writeTwoCoreHistory(stream_t&  stream);
