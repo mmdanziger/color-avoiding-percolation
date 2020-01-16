@@ -22,4 +22,4 @@ Subdirectories
 `real_data` - directory for CAIDE AS data (the data is not publicly available, please contact us if you are interested in using it)  
 `data_scripts` - scripts for loading the real data and plotting maps based on it  
 
-If you would like to use this code, please cite the original paper(s).
+If you use this code, please cite the original paper(s).
