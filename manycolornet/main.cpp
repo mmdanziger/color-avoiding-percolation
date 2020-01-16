@@ -11,7 +11,6 @@ using std::vector;
 
 
 int main(int argc, char **argv) {
-    std::cout << "Hello, world!" << std::endl;
     uint N = argc > 1 ? atoi(argv[1]) : 100000;
     uint C = argc > 2 ? atoi(argv[2]) : 10;
     ManyColorNet MCN(N,C);
@@ -23,7 +22,7 @@ int main(int argc, char **argv) {
     double delta_power = (max_power - min_power) / (steps -1);
     k_to_sample.push_back(k_crit);
     for(uint i=0;i<steps;++i){
-	k_to_sample.push_back(k_crit + pow10(min_power + i*delta_power));
+	k_to_sample.push_back(k_crit + exp10(min_power + i*delta_power));
     }
     for(auto to_k : k_to_sample){
 	MCN.build_network_to_k(to_k);

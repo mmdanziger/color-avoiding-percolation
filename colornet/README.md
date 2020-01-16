@@ -35,3 +35,4 @@ So for instance, to generate an ER network with 1e6 nodes and 3 colors and sampl
     
     colornet -N 1000000 -c 3 -d 10 --krange 1
     
+This algorithm is faster for a smaller number of colors because it uses disjoint sets to do the percolation calculation for all the colors, then merges them. For many colors this becomes slow and the manycolornet algorithm should be used.

@@ -12,7 +12,7 @@ using std::vector;
 
 int main(int argc, char **argv) {
     srand(time(0));
-    string data_dir = argc > 1 ? string(argv[1]) : "/home/micha/secret_mp/real_data/";
+    string data_dir = argc > 1 ? string(argv[1]) : "real_data/";
     ManyColorNet MCN(data_dir + "caide-latest-complete-direct-vertex-colors-only.txt",data_dir + "caide-latest-complete-direct-edge-list.txt");
     MCN.find_L_color();
     MCN.writeColorHistory(std::cout);

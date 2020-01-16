@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
 	k_crit = 1.25;
 	k_to_sample.push_back(k_crit);
 	for(uint i=0;i<steps;++i){
-	    k_to_sample.push_back(k_crit + pow10(min_power + i*delta_power));
+	    k_to_sample.push_back(k_crit + exp10(min_power + i*delta_power));
 	}
 	double r1 = 0.2;
 	map<std::string,std::vector<uint>> history;
@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
 	double delta_power = (max_power - min_power) / (steps -1);
 	k_to_sample.push_back(k_crit);
 	for(uint i=0;i<steps;++i){
-	    k_to_sample.push_back(k_crit + pow10(min_power + i*delta_power));
+	    k_to_sample.push_back(k_crit + exp10(min_power + i*delta_power));
 	}
     }
 

@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-__author__ = 'micha'
 from sys import argv
 import os
 script_path = os.path.dirname(os.path.realpath(__file__))

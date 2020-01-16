@@ -15,7 +15,7 @@ using std::vector;
 
 int main(int argc, char **argv) {
     srand(time(0));
-    string data_dir = argc > 2 ? string(argv[2]) : "/home/micha/secret_mp/real_data/";
+    string data_dir = argc > 2 ? string(argv[2]) : "real_data/";
     int samples = argc >1? atoi(argv[1]) : 100;
     ManyColorNet MCN(data_dir + "caide-latest-complete-direct-vertex-colors-only.txt",data_dir + "caide-latest-complete-direct-edge-list.txt", 1);
     
@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     int last_one=0;
     for(uint i=0; i<samples; ++i){
       
-	int to_measure = round(pow10(minpower + i*step));
+	int to_measure = round(exp10(minpower + i*step));
 	if(to_measure > 0 && to_measure < MCN.get_numlinks() && to_measure != last_one){
 	  measure_queue.push(to_measure);
 	  last_one = to_measure;

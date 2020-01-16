@@ -14,7 +14,7 @@ using std::vector;
 
 int main(int argc, char **argv) {
     srand(time(0));
-    string data_dir = argc > 3 ? string(argv[3]) : "/home/micha/secret_mp/real_data/";
+    string data_dir = argc > 3 ? string(argv[3]) : "real_data/";
     int top_k = argc > 1? atoi(argv[1]) : 20;
     float p = argc > 2? atof(argv[2]) : 1;
 //    std::cout << p << "\n";
